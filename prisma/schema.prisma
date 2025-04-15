@@ -8,6 +8,8 @@ generator client {
   output   = "../src/server/db/client"
 }
 
+// Auth models
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -19,6 +21,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
+
+  Building Building[]
 }
 
 model Account {
@@ -58,4 +62,26 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+// Domain models
+
+enum BuildingType {
+  townhall
+  // storage
+  // farm
+  // sawmill
+  // mine
+  // barracks
+}
+
+model Building {
+  id   String       @id @default(cuid())
+  type BuildingType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
