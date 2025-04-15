@@ -1,22 +1,18 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function SignInPage() {
+  const searchParams = useSearchParams();
   const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const error = searchParams.get("error");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       setCallbackUrl(url.origin);
-
-      const params = new URLSearchParams(window.location.search);
-      const errorParam = params.get("error");
-      if (errorParam) {
-        setError(errorParam);
-      }
     }
   }, []);
 

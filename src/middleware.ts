@@ -4,8 +4,6 @@ import { auth } from "./server/auth";
 export async function middleware(req: Request) {
   const url = new URL(req.url);
 
-  console.log("Middleware URL:", url.pathname);
-
   // Allow paths that start with "/auth"
   if (url.pathname.startsWith("/auth")) {
     return NextResponse.next();
