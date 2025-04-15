@@ -48,11 +48,11 @@ export default function ScalingFrame({
     <ScalingFrameContext.Provider value={{ scale }}>
       <div
         ref={frameRef}
-        className="flex h-full w-full items-center justify-center overflow-hidden"
+        className="flex h-full w-full items-center justify-center overflow-hidden bg-accent"
       >
         <div
           ref={ref}
-          className="bg-background text-foreground border border-foreground select-none"
+          className="bg-background text-foreground shadow select-none"
           style={{
             height: HEIGHT,
             width: WIDTH,
