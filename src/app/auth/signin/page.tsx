@@ -4,30 +4,21 @@ import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 export default function SignInPage() {
-  const isClient = typeof window !== "undefined";
   const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isClient) {
+    if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       setCallbackUrl(url.origin);
+
+      const params = new URLSearchParams(window.location.search);
+      const errorParam = params.get("error");
+      if (errorParam) {
+        setError(errorParam);
+      }
     }
-
-    const params = new URLSearchParams(window.location.search);
-    const errorParam = params.get("error");
-    if (errorParam) {
-      setError(errorParam);
-    }
-  }, [isClient]);
-
-  // useEffect(() => {
-  //   const callbackUrl = new URL(window.location.href);
-
-  //   signIn("discord", {
-  //     redirectTo: callbackUrl,
-  //   });
-  // }, []);
+  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-screen p-8">
