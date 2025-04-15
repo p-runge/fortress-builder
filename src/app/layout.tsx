@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { Geist, Geist_Mono } from "next/font/google";
-import TRPCProvider from "~/api/trpc-provider";
+import { TRPCProvider } from "~/api/client";
 import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
 import "./globals.css";
