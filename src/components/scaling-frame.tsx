@@ -52,7 +52,7 @@ export default function ScalingFrame({
       >
         <div
           ref={ref}
-          className="bg-background text-foreground border border-foreground"
+          className="bg-background text-foreground border border-foreground select-none"
           style={{
             height: HEIGHT,
             width: WIDTH,
