@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { Geist, Geist_Mono } from "next/font/google";
+import TRPCProvider from "~/api/trpc-provider";
 import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
 import "./globals.css";
@@ -37,7 +38,9 @@ export default function RootLayout({
     >
       <body className="flex flex-col h-screen">
         <ThemeProvider>
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <TRPCProvider>{children}</TRPCProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

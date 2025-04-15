@@ -1,9 +1,13 @@
+import { api } from "~/api/server";
 import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import { Button } from "~/components/ui/button";
 import { buildings } from "~/data/buildings";
 
 export default async function Home() {
+  const pong = await api.ping();
+  console.log("ping", pong);
+
   return (
     <ScalingFrame>
       <UI>
