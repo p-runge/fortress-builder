@@ -1,6 +1,6 @@
 import Image from "next/image";
+import { SignOutButton } from "~/components/auth-buttons";
 import { auth } from "~/server/auth";
-import SignOutButton from "./signout-button";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();

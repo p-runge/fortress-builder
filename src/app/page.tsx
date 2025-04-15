@@ -1,5 +1,6 @@
 import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
+import { Button } from "~/components/ui/button";
 import { buildings } from "~/data/buildings";
 
 export default async function Home() {
@@ -10,13 +11,11 @@ export default async function Home() {
           {buildings.map((building) => (
             <div
               key={building.id}
-              className="flex flex-col items-center justify-center p-4 border border-gray-300 rounded shadow-sm"
+              className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4"
             >
-              <h2 className="text-lg font-semibold">{building.name}</h2>
-              <p>{building.description}</p>
-              <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                Build
-              </button>
+              <h2 className="text-xl font-semibold">{building.name}</h2>
+              <p className="text-sm">{building.description}</p>
+              <Button>Build</Button>
             </div>
           ))}
         </main>
