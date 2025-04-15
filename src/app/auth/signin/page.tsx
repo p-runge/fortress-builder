@@ -1,11 +1,25 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 export default function SignInPage() {
-  const callbackUrl =
-    (typeof window !== "undefined" && new URL(window.location.href).origin) ||
-    "";
+  const isClient = typeof window !== "undefined";
+  const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isClient) {
+      const url = new URL(window.location.href);
+      setCallbackUrl(url.origin);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const errorParam = params.get("error");
+    if (errorParam) {
+      setError(errorParam);
+    }
+  }, [isClient]);
 
   // useEffect(() => {
   //   const callbackUrl = new URL(window.location.href);
@@ -21,6 +35,11 @@ export default function SignInPage() {
         <h1 className="text-3xl mb-4">Fortress Builder</h1>
         <button
           onClick={() => {
+            if (!callbackUrl) {
+              console.error("Callback URL is not set");
+              return;
+            }
+
             signIn("discord", {
               redirectTo: callbackUrl,
             });
@@ -29,6 +48,11 @@ export default function SignInPage() {
         >
           Sign in with Discord
         </button>
+        {error && (
+          <p className="mt-4 text-red-500">
+            An error occurred while signing in. Please try again.
+          </p>
+        )}
         <div className="mt-4 max-w-[300px] mx-auto text-xs">
           <p className="mb-1">
             This is a private project for me to play around with, so I would not
