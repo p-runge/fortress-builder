@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { cn } from "~/lib/utils";
 
 type FrameContextType = {
   scale: number;
@@ -26,17 +27,19 @@ export default function ScalingFrame({
   const frameRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const resize = () => {
       if (!ref.current || !frameRef.current) return;
 
       const scale = Math.min(
-        (1 / WIDTH) * frameRef.current.getClientRects()[0]!.width,
-        (1 / HEIGHT) * frameRef.current.getClientRects()[0]!.height
+        (1 / WIDTH) * frameRef.current.getBoundingClientRect().width,
+        (1 / HEIGHT) * frameRef.current.getBoundingClientRect().height
       );
       setScale(scale);
       ref.current.style.transform = `scale(${scale})`;
+      setInitialized(true);
     };
 
     resize();
@@ -52,7 +55,10 @@ export default function ScalingFrame({
       >
         <div
           ref={ref}
-          className="bg-background text-foreground shadow select-none"
+          className={cn(
+            "bg-background text-foreground shadow select-none",
+            initialized ? "opacity-100" : "opacity-0"
+          )}
           style={{
             height: HEIGHT,
             width: WIDTH,
