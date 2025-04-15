@@ -2,11 +2,9 @@ import { api } from "~/api/server";
 import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import { Button } from "~/components/ui/button";
-import { buildings } from "~/data/buildings";
 
 export default async function Home() {
-  const pong = await api.ping();
-  console.log("ping", pong);
+  const buildings = await api.building.getAll();
 
   return (
     <ScalingFrame>
@@ -17,8 +15,7 @@ export default async function Home() {
               key={building.id}
               className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4"
             >
-              <h2 className="text-xl font-semibold">{building.name}</h2>
-              <p className="text-sm">{building.description}</p>
+              <h2 className="text-xl font-semibold">{building.type}</h2>
               <Button>Build</Button>
             </div>
           ))}
