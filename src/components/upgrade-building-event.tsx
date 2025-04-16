@@ -4,12 +4,15 @@ import { Building, BuildingUpgradeTimes } from "~/server/models";
 import { Button } from "./ui/button";
 import { api } from "~/api/client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function UpgradeBuildingEvent({
   building,
 }: {
   building: Building;
 }) {
+  const router = useRouter();
+
   const { mutateAsync: upgradeBuilding } = api.building.upgrade.useMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [remainingTime, setRemainingTime] = useState(0);
@@ -50,6 +53,8 @@ export default function UpgradeBuildingEvent({
           setIsLoading(true);
           try {
             await upgradeBuilding({ id: building.id });
+            // refresh page
+            router.refresh();
           } catch (error) {
             console.error("Error upgrading building:", error);
           }
