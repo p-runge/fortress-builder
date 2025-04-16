@@ -3,6 +3,7 @@ import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import { Button } from "~/components/ui/button";
 import AddBuildingDialog from "./_components/add-building-dialog";
+import { upgradeBuilding } from "~/server/actions";
 
 export default async function Home() {
   const buildings = await api.building.getAll();
@@ -16,8 +17,18 @@ export default async function Home() {
               key={building.id}
               className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4"
             >
-              <h2 className="text-xl font-semibold">{building.type}</h2>
-              <Button>Build</Button>
+              <div className="text-center">
+                <h2 className="text-xl font-semibold">{building.type}</h2>
+                <p className="text-gray-500">Level: {building.level}</p>
+              </div>
+              <form
+                action={async () => {
+                  "use server";
+                  await upgradeBuilding(building.id);
+                }}
+              >
+                <Button>Upgrade</Button>
+              </form>
             </div>
           ))}
         </main>

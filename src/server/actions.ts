@@ -8,3 +8,8 @@ export async function addBuilding(type: BuildingType) {
   await api.building.add({ type });
   revalidatePath("/");
 }
+
+export async function upgradeBuilding(id: string) {
+  await api.building.upgrade({ id });
+  revalidatePath("/");
+}
