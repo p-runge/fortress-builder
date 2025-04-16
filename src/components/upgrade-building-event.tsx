@@ -3,7 +3,7 @@
 import { Building, BuildingUpgradeTimes } from "~/server/models";
 import { Button } from "./ui/button";
 import { api } from "~/api/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function UpgradeBuildingEvent({
   building,
@@ -12,6 +12,25 @@ export default function UpgradeBuildingEvent({
 }) {
   const { mutateAsync: upgradeBuilding } = api.building.upgrade.useMutation();
   const [isLoading, setIsLoading] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(0);
+
+  useEffect(() => {
+    if (!building.upgradeStart) return;
+
+    const timeLeft = calculateRemainingUpgradeTime(building);
+    setRemainingTime(timeLeft);
+
+    const interval = setInterval(() => {
+      const timeLeft = calculateRemainingUpgradeTime(building);
+      setRemainingTime(timeLeft);
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [building]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-2">
@@ -20,8 +39,8 @@ export default function UpgradeBuildingEvent({
           ? `Upgrade time: ${
               BuildingUpgradeTimes[building.type][building.level]
             }s`
-          : calculateRemainingUpgradeTime(building) > 0 // upgrade in progress, show remaining time
-          ? `Upgrading... ${calculateRemainingUpgradeTime(building)}s remaining`
+          : remainingTime > 0 // upgrade in progress, show remaining time
+          ? `Upgrading... ${remainingTime}s remaining`
           : // upgrade finished, show finished message
             "Upgrade finished"}
       </p>

@@ -71,9 +71,13 @@ export const buildingRouter = router({
         });
       }
 
+      // TODO: start job to upgrade building after *upgradeTime* seconds
       const upgradeTime = BuildingUpgradeTimes[building.type][building.level];
-      const now = new Date();
-      const upgradeStart = new Date(now.getTime() + upgradeTime * 1000);
+      console.log(
+        `Upgrading building ${building.id} (${building.type}) from level ${
+          building.level
+        } to level ${building.level + 1} in ${upgradeTime} seconds`
+      );
 
       await db.building.update({
         where: {
@@ -81,7 +85,7 @@ export const buildingRouter = router({
           userId: session.user.id,
         },
         data: {
-          upgradeStart,
+          upgradeStart: new Date(),
         },
       });
     }),
