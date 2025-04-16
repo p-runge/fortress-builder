@@ -15,6 +15,8 @@ import { BuildingType } from "~/server/db/client";
 
 export default function NewBuildingDialog() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -33,12 +35,20 @@ export default function NewBuildingDialog() {
               key={type}
               variant="outline"
               className="w-full"
+              disabled={isLoading}
               onClick={async () => {
-                await addBuilding(type);
-                setIsOpen(false);
+                setIsLoading(true);
+                try {
+                  await addBuilding(type);
+                } catch (error) {
+                  console.error("Error adding building:", error);
+                } finally {
+                  setIsLoading(false);
+                  setIsOpen(false);
+                }
               }}
             >
-              {type}
+              {isLoading ? "Building..." : type}
             </Button>
           ))}
         </div>
