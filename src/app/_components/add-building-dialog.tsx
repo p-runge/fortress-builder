@@ -42,10 +42,9 @@ export default function NewBuildingDialog() {
                   await addBuilding(type);
                 } catch (error) {
                   console.error("Error adding building:", error);
-                } finally {
-                  setIsLoading(false);
-                  setIsOpen(false);
                 }
+                setIsLoading(false);
+                setIsOpen(false);
               }}
             >
               {isLoading ? "Building..." : type}

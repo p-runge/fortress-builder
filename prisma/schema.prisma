@@ -76,9 +76,10 @@ enum BuildingType {
 }
 
 model Building {
-  id    String       @id @default(cuid())
-  type  BuildingType
-  level Int          @default(1)
+  id           String       @id @default(cuid())
+  type         BuildingType
+  level        Int          @default(1)
+  upgradeStart DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()

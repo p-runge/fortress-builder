@@ -1,13 +1,8 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { BuildingType } from "~/server/db/client";
+import { BuildingSchema, BuildingUpgradeTimes } from "~/server/models";
 import { authedProcedure, router } from "../trpc";
-
-export const BuildingSchema = z.object({
-  id: z.string(),
-  type: z.nativeEnum(BuildingType),
-  level: z.number().int().positive(),
-});
 
 export const buildingRouter = router({
   getAll: authedProcedure
@@ -30,27 +25,63 @@ export const buildingRouter = router({
 
   add: authedProcedure
     .input(z.object({ type: BuildingSchema.shape.type }))
+    .output(z.string())
     .mutation(async ({ input, ctx: { session } }) => {
-      return await db.building.create({
+      const { id } = await db.building.create({
+        select: {
+          id: true,
+        },
         data: {
           type: input.type,
           userId: session.user.id,
         },
       });
+
+      return id;
     }),
 
   upgrade: authedProcedure
     .input(z.object({ id: z.string() }))
+    .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {
-      return await db.building.update({
+      const building = await db.building.findUniqueOrThrow({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (building.userId !== session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to upgrade this building.",
+        });
+      }
+
+      if (building.upgradeStart) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Building is already upgrading.",
+        });
+      }
+
+      if (building.level >= 5) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Building is already at max level.",
+        });
+      }
+
+      const upgradeTime = BuildingUpgradeTimes[building.type][building.level];
+      const now = new Date();
+      const upgradeStart = new Date(now.getTime() + upgradeTime * 1000);
+
+      await db.building.update({
         where: {
           id: input.id,
           userId: session.user.id,
         },
         data: {
-          level: {
-            increment: 1,
-          },
+          upgradeStart,
         },
       });
     }),
