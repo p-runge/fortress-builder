@@ -17,6 +17,14 @@ export const buildingRouter = router({
         where: {
           userId: session.user.id,
         },
+        orderBy: [
+          {
+            createdAt: "asc",
+          },
+          {
+            id: "asc",
+          },
+        ],
       });
     }),
 
