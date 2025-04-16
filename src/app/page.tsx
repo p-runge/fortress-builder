@@ -2,6 +2,7 @@ import { api } from "~/api/server";
 import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import { Button } from "~/components/ui/button";
+import AddBuildingDialog from "./_components/add-building-dialog";
 
 export default async function Home() {
   const buildings = await api.building.getAll();
@@ -20,6 +21,11 @@ export default async function Home() {
             </div>
           ))}
         </main>
+
+        {/* add building button */}
+        <div className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4">
+          <AddBuildingDialog />
+        </div>
       </UI>
     </ScalingFrame>
   );
