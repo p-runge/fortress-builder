@@ -53,7 +53,8 @@ export default function UpgradeBuildingEvent({
           setIsLoading(true);
           try {
             await upgradeBuilding({ id: building.id });
-            // refresh page
+
+            // trigger a refetch of the buildings from the page to reinitialize the component
             router.refresh();
           } catch (error) {
             console.error("Error upgrading building:", error);
