@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { BuildingSchema, BuildingUpgradeTimes } from "~/server/models";
 import { authedProcedure, router } from "../trpc";
+import { buildingUpgradeQueue } from "~/server/jobs";
 
 export const buildingRouter = router({
   getAll: authedProcedure
@@ -71,14 +72,6 @@ export const buildingRouter = router({
         });
       }
 
-      // TODO: start job to upgrade building after *upgradeTime* seconds
-      const upgradeTime = BuildingUpgradeTimes[building.type][building.level];
-      console.log(
-        `Upgrading building ${building.id} (${building.type}) from level ${
-          building.level
-        } to level ${building.level + 1} in ${upgradeTime} seconds`
-      );
-
       await db.building.update({
         where: {
           id: input.id,
@@ -88,5 +81,13 @@ export const buildingRouter = router({
           upgradeStart: new Date(),
         },
       });
+
+      // start job to upgrade building after *upgradeTime* seconds
+      const upgradeTime = BuildingUpgradeTimes[building.type][building.level];
+      await buildingUpgradeQueue.add(
+        "upgrade-building",
+        { buildingId: input.id },
+        { delay: upgradeTime * 1000 }
+      );
     }),
 });
