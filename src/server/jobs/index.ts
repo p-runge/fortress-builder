@@ -12,10 +12,11 @@ export const buildingUpgradeQueue = new Queue("building-upgrades", {
   prefix: "fb",
 });
 
-new Worker(
+const worker = new Worker(
   "building-upgrades",
   async (job) => {
     const { buildingId } = job.data;
+    console.log(`Upgrading building ${buildingId}...`);
 
     const building = await db.building.findUniqueOrThrow({
       where: { id: buildingId },
@@ -34,6 +35,10 @@ new Worker(
         upgradeStart: null,
       },
     });
+    console.log(
+      `Building ${buildingId} upgraded to level ${building.level + 1}`
+    );
   },
-  { connection: redis }
+  { connection: redis, autorun: false, limiter: { max: 5, duration: 1000 } } // 100 jobs per second
 );
+worker.run();
