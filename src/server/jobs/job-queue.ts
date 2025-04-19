@@ -38,7 +38,7 @@ export class JobQueue {
     await redis.set(`${this.jobPrefix}${id}`, JSON.stringify(job));
 
     // Add job ID to the sorted set with score as execution time
-    await redis.zadd(this.jobsKey, { score: scheduledFor, member: id });
+    await redis.zadd(this.jobsKey, scheduledFor, id);
 
     return job;
   }
@@ -49,9 +49,16 @@ export class JobQueue {
 
     // Get job IDs that are scheduled for execution (score <= now)
     console.log(`Fetching jobs ready for processing (limit: ${limit})`);
-    const jobIds = await redis.zrangebyscore(this.jobsKey, 0, now, {
-      limit: { offset: 0, count: limit },
-    });
+    const jobIds = await redis.zrange(
+      this.jobsKey,
+      0,
+      now,
+      "BYSCORE",
+      "LIMIT",
+      0,
+      limit
+    );
+    console.log(`Found ${jobIds.length} jobs with job IDs: ${jobIds}`);
 
     if (!jobIds.length) return [];
 
