@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "worker": "ts-node --project tsconfig.json -r tsconfig-paths/register src/server/jobs/dev-worker.ts",
+    "dev:all": "concurrently \"npm run dev\" \"npm run worker\" --names \"next,worker\" --prefix-colors \"blue,green\" --kill-others",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -20,7 +22,6 @@
     "@trpc/client": "^11.1.0",
     "@trpc/react-query": "^11.1.0",
     "@trpc/server": "^11.1.0",
-    "bullmq": "^5.49.0",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
@@ -33,6 +34,7 @@
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.2.0",
     "tw-animate-css": "^1.2.5",
+    "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

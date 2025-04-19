@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { BuildingSchema, BuildingUpgradeTimes } from "~/server/models";
 import { authedProcedure, router } from "../trpc";
-import { buildingUpgradeQueue } from "~/server/jobs";
+import { jobQueue } from "~/server/jobs/job-queue";
 
 export const buildingRouter = router({
   getAll: authedProcedure
@@ -84,10 +84,10 @@ export const buildingRouter = router({
 
       // start job to upgrade building after *upgradeTime* seconds
       const upgradeTime = BuildingUpgradeTimes[building.type][building.level];
-      await buildingUpgradeQueue.add(
+      await jobQueue.addJob(
         "upgrade-building",
         { buildingId: input.id },
-        { delay: upgradeTime * 1000 }
+        upgradeTime * 1000
       );
     }),
 });

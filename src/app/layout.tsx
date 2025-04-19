@@ -6,6 +6,10 @@ import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
 import "./globals.css";
 
+// Initialize the worker on the server
+import { initializeDevWorker } from "~/server/jobs";
+initializeDevWorker();
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
