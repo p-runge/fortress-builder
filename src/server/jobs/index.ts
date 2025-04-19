@@ -11,9 +11,17 @@ let workerStarted = false;
  */
 export async function initializeDevWorker() {
   if (workerStarted) return;
-
-  await startDevWorker(1000);
   workerStarted = true;
+
+  console.log("Initializing dev worker... Started?", workerStarted);
+  try {
+    await startDevWorker(1000);
+  } catch (error) {
+    workerStarted = false;
+
+    console.error("Error starting dev worker:", error);
+    throw error;
+  }
 }
 
 // Initialize the dev worker on the server
