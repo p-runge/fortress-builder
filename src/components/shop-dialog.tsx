@@ -1,8 +1,9 @@
 "use client";
 
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faGem, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { api } from "~/api/client";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,9 @@ export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
+  const { data: items, isLoading: isLoadingItems } =
+    api.item.getShopItems.useQuery();
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -25,17 +29,45 @@ export default function ShopDialog() {
           className="cursor-pointer m-2 hover:scale-110 transition-transform"
         />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>Resource Items</DialogTitle>
           <DialogDescription>
             Use these items to give you an instant boost in resources.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {/*
-          // TODO: Add items to the shop
-           */}
+        <div className="grid grid-cols-3 gap-4 py-4">
+          {isLoadingItems ? (
+            <div className="flex items-center justify-center">
+              <p className="text-gray-500">Loading...</p>
+            </div>
+          ) : items && items.length > 0 ? (
+            items.map((item) => (
+              <div
+                key={item.type}
+                className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center">
+                  {/* <img
+                    src={`/images/${item.type}.png`}
+                    alt={item.type}
+                    className="w-8 h-8 mr-2"
+                  /> */}
+                  <span>{item.type}</span>
+                </div>
+                <FontAwesomeIcon
+                  icon={faGem}
+                  size="lg"
+                  className="cursor-pointer mt-2 text-blue-400"
+                />{" "}
+                <span>{item.cost}</span>
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center justify-center">
+              <p className="text-gray-500">No items available</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

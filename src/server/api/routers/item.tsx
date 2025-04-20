@@ -4,26 +4,25 @@ import { ItemType } from "~/server/db/client";
 import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
 
-// const ItemSchema = z.object({
-//   id: z.string(),
-//   type: z.nativeEnum(ItemType),
-// });
+const ItemSchema = z.object({
+  type: z.nativeEnum(ItemType),
+  cost: z.number(),
+});
 
 export const itemRouter = router({
-  // getInventory: authedProcedure
-  //   .output(z.array(ItemSchema))
-  //   .query(async ({ ctx: { session } }) => {
-  //     return await db.userItems.findMany({
-  //       where: {
-  //         userId: session.user.id,
-  //       },
-  //       orderBy: [
-  //         {
-  //           type: "asc",
-  //         },
-  //       ],
-  //     });
-  //   }),
+  getShopItems: authedProcedure.output(z.array(ItemSchema)).query(async () => {
+    return await db.item.findMany({
+      orderBy: [
+        {
+          type: "asc",
+        },
+      ],
+      select: {
+        type: true,
+        cost: true,
+      },
+    });
+  }),
 
   buy: authedProcedure
     .input(z.object({ type: z.nativeEnum(ItemType), amount: z.number() }))
