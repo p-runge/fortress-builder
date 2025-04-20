@@ -13,7 +13,17 @@ export default function UpgradeBuildingEvent({
 }) {
   const router = useRouter();
 
-  const { mutateAsync: upgradeBuilding } = api.building.upgrade.useMutation();
+  // subscribe to the building upgrade event
+  api.building.onUpgrade.useSubscription(
+    { id: building.id },
+    {
+      onData(data) {
+        console.log("Building upgraded:", data);
+        router.refresh();
+      },
+    }
+  );
+  const { mutateAsync: startUpgrade } = api.building.startUpgrade.useMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [remainingTime, setRemainingTime] = useState(0);
 
@@ -52,7 +62,7 @@ export default function UpgradeBuildingEvent({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await upgradeBuilding({ id: building.id });
+            await startUpgrade({ id: building.id });
 
             // trigger a refetch of the buildings from the page to reinitialize the component
             router.refresh();

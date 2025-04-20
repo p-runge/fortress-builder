@@ -1,3 +1,4 @@
+import { eventEmitter } from "~/server/api/event-emitter";
 import { db } from "../db";
 import { registerJobHandler } from "./dev-worker";
 
@@ -28,10 +29,17 @@ registerJobHandler(
       `Building ${buildingId} upgraded to level ${building.level + 1}`
     );
 
-    return {
-      buildingId,
+    eventEmitter.emit("upgrade-building", {
+      id: buildingId,
       level: building.level + 1,
-      timestamp: new Date().toISOString(),
-    };
+    });
+
+    console.log("Emitted event for building upgrade:", buildingId);
+
+    // return {
+    //   buildingId,
+    //   level: building.level + 1,
+    //   timestamp: new Date().toISOString(),
+    // };
   }
 );

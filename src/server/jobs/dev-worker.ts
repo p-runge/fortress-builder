@@ -30,8 +30,6 @@ async function processJob(job: Job): Promise<void> {
 
     // Mark job as completed
     await jobQueue.completeJob(job.id, result);
-
-    console.log(`Job ${job.id} of type ${job.type} completed successfully`);
   } catch (error) {
     // Mark job as failed
     await jobQueue.failJob(

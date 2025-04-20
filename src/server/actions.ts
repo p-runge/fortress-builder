@@ -10,6 +10,6 @@ export async function addBuilding(type: BuildingType) {
 }
 
 export async function upgradeBuilding(id: string) {
-  await api.building.upgrade({ id });
+  await api.building.startUpgrade({ id });
   revalidatePath("/");
 }

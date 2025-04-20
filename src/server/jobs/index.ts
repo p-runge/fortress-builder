@@ -13,9 +13,10 @@ export async function initializeDevWorker() {
   if (workerStarted) return;
   workerStarted = true;
 
-  console.log("Initializing dev worker... Started?", workerStarted);
+  const interval = 1000; // 1 second
+  console.log(`Initializing dev worker with interval of ${interval}ms...`);
   try {
-    await startDevWorker(1000);
+    await startDevWorker(interval);
   } catch (error) {
     workerStarted = false;
 

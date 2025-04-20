@@ -48,7 +48,6 @@ export class JobQueue {
     const now = Date.now();
 
     // Get job IDs that are scheduled for execution (score <= now)
-    console.log(`Fetching jobs ready for processing (limit: ${limit})`);
     const jobIds = await redis.zrange(
       this.jobsKey,
       0,
@@ -58,7 +57,6 @@ export class JobQueue {
       0,
       limit
     );
-    console.log(`Found ${jobIds.length} jobs with job IDs: ${jobIds}`);
 
     if (!jobIds.length) return [];
 
