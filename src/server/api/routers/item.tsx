@@ -75,7 +75,7 @@ export const itemRouter = router({
             upsert: {
               where: {
                 userId_itemId: {
-                  itemId: input.type,
+                  itemId: item.id,
                   userId: session.user.id,
                 },
               },

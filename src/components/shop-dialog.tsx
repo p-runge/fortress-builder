@@ -2,6 +2,7 @@
 
 import { faGem, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/api/client";
 import {
@@ -15,10 +16,14 @@ import {
 
 export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingBuy, setIsLoadingBuy] = useState(false);
 
   const { data: items, isLoading: isLoadingItems } =
     api.item.getShopItems.useQuery();
+
+  const { mutateAsync: buyItem } = api.item.buy.useMutation();
+
+  const router = useRouter();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -45,7 +50,17 @@ export default function ShopDialog() {
             items.map((item) => (
               <div
                 key={item.type}
-                className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="cursor-pointer p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                onClick={async () => {
+                  if (isLoadingBuy) return;
+
+                  setIsLoadingBuy(true);
+                  try {
+                    await buyItem({ type: item.type, amount: 1 });
+                    router.refresh();
+                  } catch {}
+                  setIsLoadingBuy(false);
+                }}
               >
                 <div className="flex items-center">
                   {/* <img
