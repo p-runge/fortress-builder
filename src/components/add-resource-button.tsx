@@ -29,7 +29,7 @@ export default function AddResourceButton({
         router.refresh();
       }}
     >
-      +{new Intl.NumberFormat(navigator.language).format(amount)}
+      +{amount}
     </Button>
   );
 }

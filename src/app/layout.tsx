@@ -6,6 +6,11 @@ import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
 import "./globals.css";
 
+// set up fontawesome icons and fix icon sizes
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
+
 // Initialize the worker on the server
 import { initializeDevWorker } from "~/server/jobs";
 initializeDevWorker();
