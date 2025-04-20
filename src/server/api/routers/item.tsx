@@ -119,6 +119,13 @@ export const itemRouter = router({
           },
           amount: true,
         },
+        orderBy: [
+          {
+            item: {
+              type: "asc",
+            },
+          },
+        ],
       });
 
       return items.map((item) => ({
