@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { SignOutButton } from "~/components/auth-buttons";
 import { auth } from "~/server/auth";
+import { mockedInventory } from "~/server/models/inventory";
+import { ResourceType } from "~/server/models/resource";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -11,7 +13,22 @@ export default async function UI({ children }: { children: React.ReactNode }) {
       {/* second col as big as possible */}
       <div className="absolute inset-0 pointer-events-none grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto] gap-4">
         {/* top menu */}
-        <div className="col-span-3 p-2 pointer-events-auto flex justify-end gap-4">
+        <div className="col-span-3 p-2 pointer-events-auto flex justify-end gap-12">
+          {/* inventory */}
+          <div className="flex gap-4">
+            {Object.values(ResourceType).map((resource) => (
+              <div key={resource} className="text-xl">
+                <span className="capitalize">{resource}</span>{" "}
+                <span>
+                  {new Intl.NumberFormat(navigator.language).format(
+                    mockedInventory[resource]
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* user info */}
           <div className="flex items-center gap-2">
             <Image
               src={session?.user?.image ?? ""}
