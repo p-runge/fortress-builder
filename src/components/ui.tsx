@@ -1,16 +1,18 @@
+import {
+  faCoins,
+  faFish,
+  faGem,
+  faMountain,
+  faTree,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { api } from "~/api/server";
 import { SignOutButton } from "~/components/auth-buttons";
+import { cn } from "~/lib/utils";
 import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
 import AddResourceButton from "./add-resource-button";
-import {
-  faAppleWhole,
-  faTree,
-  faCoins,
-  faMountain,
-} from "@fortawesome/free-solid-svg-icons";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -27,7 +29,13 @@ export default async function UI({ children }: { children: React.ReactNode }) {
           {/* resources */}
           <div className="flex gap-4">
             {Object.values(ResourceType).map((resource) => (
-              <div key={resource} className="text-xl">
+              <div
+                key={resource}
+                className={cn(
+                  "text-xl",
+                  resource === "gems" && "text-blue-400"
+                )}
+              >
                 <span className="capitalize">{resourceIconMap[resource]}</span>{" "}
                 <span>
                   {new Intl.NumberFormat(navigator.language).format(
@@ -70,8 +78,9 @@ export default async function UI({ children }: { children: React.ReactNode }) {
   );
 }
 
-const resourceIconMap = {
-  [ResourceType.food]: <FontAwesomeIcon icon={faAppleWhole} />,
+const resourceIconMap: Record<ResourceType, React.ReactNode> = {
+  [ResourceType.gems]: <FontAwesomeIcon icon={faGem} />,
+  [ResourceType.food]: <FontAwesomeIcon icon={faFish} />,
   [ResourceType.wood]: <FontAwesomeIcon icon={faTree} />,
   [ResourceType.stone]: <FontAwesomeIcon icon={faMountain} />, // Replacing faStone with faMountain
   [ResourceType.gold]: <FontAwesomeIcon icon={faCoins} />,

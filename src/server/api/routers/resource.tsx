@@ -19,6 +19,7 @@ export const resourceRouter = router({
     .query(async ({ ctx: { session } }) => {
       const resources = await db.userResources.findUnique({
         select: {
+          gems: true,
           food: true,
           wood: true,
           stone: true,
@@ -35,6 +36,7 @@ export const resourceRouter = router({
       // if no resources found, create them
       return db.userResources.create({
         select: {
+          gems: true,
           food: true,
           wood: true,
           stone: true,

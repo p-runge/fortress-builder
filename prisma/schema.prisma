@@ -90,6 +90,7 @@ model Building {
 }
 
 enum ResourceType {
+  gems
   food
   wood
   stone
@@ -99,6 +100,7 @@ enum ResourceType {
 model UserResources {
   id String @id @default(cuid())
 
+  gems  Int @default(0)
   food  Int @default(0)
   wood  Int @default(0)
   stone Int @default(0)
