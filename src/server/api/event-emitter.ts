@@ -1,10 +1,11 @@
 import { EventEmitter } from "stream";
 
-if (!global.eventEmitterSingleton) {
-  console.log("Creating new event emitter singleton");
-  global.eventEmitterSingleton = new EventEmitter();
-} else {
-  console.log("Returning existing event emitter singleton");
-}
+const globalForEventEmitter = globalThis as unknown as {
+  eventEmitter: EventEmitter;
+};
 
-export const eventEmitter = global.eventEmitterSingleton as EventEmitter;
+export const eventEmitter =
+  globalForEventEmitter.eventEmitter || new EventEmitter();
+
+if (process.env.NODE_ENV !== "production")
+  globalForEventEmitter.eventEmitter = eventEmitter;
