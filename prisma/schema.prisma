@@ -24,6 +24,7 @@ model User {
 
   buildings Building[]
   resources UserResources?
+  items     UserItems[]
 }
 
 model Account {
@@ -115,14 +116,29 @@ model UserResources {
   // @@unique([userId])
 }
 
-// model Item {
-//   id     String @id @default(cuid())
-//   name   String
-//   amount Int    @default(1)
+enum ItemType {
+  food_boost_1000
+  food_boost_1000000
+  wood_boost_1000
+  wood_boost_1000000
+  stone_boost_1000
+  stone_boost_1000000
+  gold_boost_1000
+  gold_boost_1000000
+  // time_skip
+}
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @default(now()) @updatedAt()
+model UserItems {
+  id String @id @default(cuid())
 
-//   userId String
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-// }
+  type   ItemType
+  amount Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
