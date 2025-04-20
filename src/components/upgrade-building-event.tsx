@@ -1,6 +1,6 @@
 "use client";
 
-import { Building, BuildingUpgradeTimes } from "~/server/models";
+import { Building, BuildingUpgradeTimes } from "~/server/models/building";
 import { Button } from "./ui/button";
 import { api } from "~/api/client";
 import { useState, useEffect } from "react";

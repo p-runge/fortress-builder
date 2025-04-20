@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BuildingType } from "./db/client";
+import { BuildingType } from "../db/client";
 
 export const BuildingSchema = z.object({
   id: z.string(),

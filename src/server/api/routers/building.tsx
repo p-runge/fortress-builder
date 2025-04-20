@@ -4,7 +4,7 @@ import { z } from "zod";
 import { eventEmitter } from "~/server/api/event-emitter";
 import { db } from "~/server/db";
 import { jobQueue } from "~/server/jobs/job-queue";
-import { BuildingSchema, BuildingUpgradeTimes } from "~/server/models";
+import { BuildingSchema, BuildingUpgradeTimes } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
