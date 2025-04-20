@@ -17,19 +17,37 @@ export const resourceRouter = router({
   getAll: authedProcedure
     .output(ResourcesSchema)
     .query(async ({ ctx: { session } }) => {
-      const resources = await db.resource.findMany({
+      const resources = await db.userResources.findUnique({
+        select: {
+          food: true,
+          wood: true,
+          stone: true,
+          gold: true,
+        },
         where: {
           userId: session.user.id,
         },
       });
 
-      return {
-        food: resources.find((r) => r.type === ResourceType.food)?.amount ?? 0,
-        wood: resources.find((r) => r.type === ResourceType.wood)?.amount ?? 0,
-        stone:
-          resources.find((r) => r.type === ResourceType.stone)?.amount ?? 0,
-        gold: resources.find((r) => r.type === ResourceType.gold)?.amount ?? 0,
-      };
+      if (resources) {
+        return resources;
+      }
+      // if no resources found, create them
+      return db.userResources.create({
+        select: {
+          food: true,
+          wood: true,
+          stone: true,
+          gold: true,
+        },
+        data: {
+          userId: session.user.id,
+          food: 0,
+          wood: 0,
+          stone: 0,
+          gold: 0,
+        },
+      });
     }),
 
   add: authedProcedure
@@ -42,31 +60,21 @@ export const resourceRouter = router({
     .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {
       // create or update resource for user
-      const resource = await db.resource.findUnique({
+      const resource = await db.userResources.findUniqueOrThrow({
         where: {
-          userId_type: {
-            userId: session.user.id,
-            type: input.type,
+          userId: session.user.id,
+        },
+      });
+
+      await db.userResources.update({
+        where: {
+          id: resource.id,
+        },
+        data: {
+          [input.type]: {
+            increment: input.amount,
           },
         },
       });
-      if (!resource) {
-        await db.resource.create({
-          data: {
-            userId: session.user.id,
-            type: input.type,
-            amount: input.amount,
-          },
-        });
-      } else {
-        await db.resource.update({
-          where: {
-            id: resource.id,
-          },
-          data: {
-            amount: resource.amount + input.amount,
-          },
-        });
-      }
     }),
 });
