@@ -1,6 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
-import { auth } from "../auth";
+import { auth, signIn } from "../auth";
 import { z } from "zod";
 import { db } from "../db";
 
@@ -51,6 +51,7 @@ export const createTRPCContext = cache(async () => {
   );
   if (!parsedSession.success) {
     console.error("Session validation failed", parsedSession.error);
+    await signIn();
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Session validation failed",
