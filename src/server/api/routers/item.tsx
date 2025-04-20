@@ -1,28 +1,35 @@
-import { z } from "zod";
-import { authedProcedure, router } from "../trpc";
-import { ItemType } from "~/server/db/client";
-import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { db } from "~/server/db";
+import { ItemType } from "~/server/db/client";
+import { authedProcedure, router } from "../trpc";
 
-const ItemSchema = z.object({
+const ShopItemSchema = z.object({
   type: z.nativeEnum(ItemType),
   cost: z.number(),
 });
 
+const UserItemSchema = z.object({
+  type: z.nativeEnum(ItemType),
+  amount: z.number(),
+});
+
 export const itemRouter = router({
-  getShopItems: authedProcedure.output(z.array(ItemSchema)).query(async () => {
-    return await db.item.findMany({
-      orderBy: [
-        {
-          type: "asc",
+  getShopItems: authedProcedure
+    .output(z.array(ShopItemSchema))
+    .query(async () => {
+      return await db.item.findMany({
+        orderBy: [
+          {
+            type: "asc",
+          },
+        ],
+        select: {
+          type: true,
+          cost: true,
         },
-      ],
-      select: {
-        type: true,
-        cost: true,
-      },
-    });
-  }),
+      });
+    }),
 
   buy: authedProcedure
     .input(z.object({ type: z.nativeEnum(ItemType), amount: z.number() }))
@@ -92,6 +99,29 @@ export const itemRouter = router({
           },
         },
       });
+    }),
+
+  getUserItems: authedProcedure
+    .output(z.array(UserItemSchema))
+    .query(async ({ ctx: { session } }) => {
+      const items = await db.userItems.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        select: {
+          item: {
+            select: {
+              type: true,
+            },
+          },
+          amount: true,
+        },
+      });
+
+      return items.map((item) => ({
+        type: item.item.type,
+        amount: item.amount,
+      }));
     }),
 
   use: authedProcedure

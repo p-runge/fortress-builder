@@ -12,6 +12,7 @@ import { SignOutButton } from "~/components/auth-buttons";
 import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
 import AddResourceButton from "./add-resource-button";
+import InventoryDialog from "./inventory-dialog";
 import ShopDialog from "./shop-dialog";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
@@ -85,6 +86,7 @@ export default async function UI({ children }: { children: React.ReactNode }) {
 
         {/* bottom menu */}
         <div className="col-span-3 pointer-events-auto flex justify-end">
+          <InventoryDialog />
           <ShopDialog />
         </div>
       </div>
