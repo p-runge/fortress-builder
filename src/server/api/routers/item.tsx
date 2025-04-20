@@ -107,6 +107,9 @@ export const itemRouter = router({
       const items = await db.userItems.findMany({
         where: {
           userId: session.user.id,
+          amount: {
+            gt: 0,
+          },
         },
         select: {
           item: {
