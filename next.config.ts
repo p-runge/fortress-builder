@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 import "./src/env";
 
+import { seedDatabase } from "./src/server/db/seeding";
+seedDatabase();
+
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
