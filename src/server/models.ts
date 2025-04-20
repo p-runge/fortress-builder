@@ -14,11 +14,10 @@ export const BuildingUpgradeTimes: Record<
   Record<number, number>
 > = {
   [BuildingType.townhall]: {
-    1: 5,
-    2: 20,
-    3: 90,
-    4: 300,
-    5: 1200,
+    2: 5,
+    3: 20,
+    4: 90,
+    5: 300,
   },
 };
 export type BuildingUpgradeTimes = typeof BuildingUpgradeTimes;

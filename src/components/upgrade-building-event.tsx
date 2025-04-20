@@ -50,7 +50,7 @@ export default function UpgradeBuildingEvent({
       <p className="text-gray-500">
         {!building.upgradeStart // no upgrade in progress, show upgrade time
           ? `Upgrade time: ${
-              BuildingUpgradeTimes[building.type][building.level]
+              BuildingUpgradeTimes[building.type][building.level + 1]
             }s`
           : remainingTime > 0 // upgrade in progress, show remaining time
           ? `Upgrading... ${remainingTime}s remaining`
@@ -93,7 +93,7 @@ function calculateRemainingUpgradeTime(building: Building): number {
 
   const upgradeEnd = new Date(
     building.upgradeStart.getTime() +
-      BuildingUpgradeTimes[building.type][building.level] * 1000
+      BuildingUpgradeTimes[building.type][building.level + 1] * 1000
   );
 
   if (upgradeEnd < now) {
