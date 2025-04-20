@@ -128,17 +128,30 @@ enum ItemType {
   // time_skip
 }
 
-model UserItems {
+model Item {
   id String @id @default(cuid())
 
-  type   ItemType
-  amount Int      @default(1)
+  type ItemType @unique
+  cost Int      @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
+  userItems UserItems[]
+}
+
+model UserItems {
+  id String @id @default(cuid())
+
+  amount Int @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, type])
+  @@unique([userId, itemId])
 }
