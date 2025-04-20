@@ -22,7 +22,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  Building Building[]
+  buildings Building[]
+  resources Resource[]
 }
 
 model Account {
@@ -87,3 +88,36 @@ model Building {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+enum ResourceType {
+  food
+  wood
+  stone
+  gold
+}
+
+model Resource {
+  id     String       @id @default(cuid())
+  type   ResourceType
+  amount Int          @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
+
+// model Item {
+//   id     String @id @default(cuid())
+//   name   String
+//   amount Int    @default(1)
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now()) @updatedAt()
+
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }

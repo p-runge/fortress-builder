@@ -1,7 +1,8 @@
-export const ResourceType = {
-  food: "food",
-  wood: "wood",
-  stone: "stone",
-  gold: "gold",
-} as const;
-export type ResourceType = (typeof ResourceType)[keyof typeof ResourceType];
+import { z } from "zod";
+import { ResourceType } from "../db/client";
+
+export const ResourceSchema = z.object({
+  id: z.string(),
+  type: z.nativeEnum(ResourceType),
+});
+export type Inventory = z.infer<typeof ResourceSchema>;
