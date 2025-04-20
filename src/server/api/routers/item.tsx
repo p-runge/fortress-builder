@@ -93,4 +93,187 @@ export const itemRouter = router({
         },
       });
     }),
+
+  use: authedProcedure
+    .input(
+      z.object({ type: z.nativeEnum(ItemType), amount: z.number().default(1) })
+    )
+    .output(z.void())
+    .mutation(async ({ input, ctx: { session } }) => {
+      const item = await db.item.findUniqueOrThrow({
+        where: {
+          type: input.type,
+        },
+        select: {
+          id: true,
+          cost: true,
+        },
+      });
+
+      // TODO: add rollback in case of error
+
+      // trigger item effect
+      await itemEffectMap[input.type](session.user.id, input.amount);
+
+      // remove user item
+      await db.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          items: {
+            update: {
+              where: {
+                userId_itemId: {
+                  itemId: item.id,
+                  userId: session.user.id,
+                },
+              },
+              data: {
+                amount: {
+                  decrement: input.amount,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
 });
+
+/**
+ * Each item type has a corresponding effect that is triggered when the item is used.
+ */
+const itemEffectMap: Record<
+  ItemType,
+  (userId: string, amount: number) => Promise<void>
+> = {
+  [ItemType.food_boost_1000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            food: {
+              increment: 1000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.food_boost_1000000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            food: {
+              increment: 10000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.wood_boost_1000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            wood: {
+              increment: 1000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.wood_boost_1000000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            wood: {
+              increment: 10000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.stone_boost_1000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            stone: {
+              increment: 1000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.stone_boost_1000000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            stone: {
+              increment: 10000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.gold_boost_1000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            gold: {
+              increment: 1000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+  [ItemType.gold_boost_1000000]: async function (userId, amount) {
+    await db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resources: {
+          update: {
+            gold: {
+              increment: 10000 * amount,
+            },
+          },
+        },
+      },
+    });
+  },
+};
