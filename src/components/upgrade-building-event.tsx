@@ -1,10 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { api } from "~/api/client";
 import { Building, BuildingMetric } from "~/server/models/building";
 import { Button } from "./ui/button";
-import { api } from "~/api/client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export default function UpgradeBuildingEvent({
   building,
