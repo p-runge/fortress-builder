@@ -3,8 +3,9 @@ import { on } from "stream";
 import { z } from "zod";
 import { eventEmitter } from "~/server/api/event-emitter";
 import { db } from "~/server/db";
+import { ResourceType } from "~/server/db/client";
 import { jobQueue } from "~/server/jobs/job-queue";
-import { BuildingSchema, BuildingMetric } from "~/server/models/building";
+import { BuildingMetric, BuildingSchema } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
@@ -71,6 +72,54 @@ export const buildingRouter = router({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Building is already at max level.",
+        });
+      }
+
+      // check if user has enough resources to upgrade building
+      const costs =
+        BuildingMetric[building.type].upgrades[building.level + 1]?.costs;
+      if (costs) {
+        const user = await db.user.findUniqueOrThrow({
+          where: {
+            id: session.user.id,
+          },
+          select: {
+            resources: true,
+          },
+        });
+        const userResources = user.resources!;
+        for (const [resource, cost] of Object.entries(costs)) {
+          if (userResources[resource as ResourceType] < cost) {
+            throw new TRPCError({
+              code: "UNPROCESSABLE_CONTENT",
+              message: `Not enough ${resource} to upgrade building.`,
+            });
+          }
+        }
+
+        // remove costs from user resources
+        await db.user.update({
+          where: {
+            id: session.user.id,
+          },
+          data: {
+            resources: {
+              update: {
+                [ResourceType.wood]: {
+                  decrement: costs[ResourceType.wood] ?? 0,
+                },
+                [ResourceType.stone]: {
+                  decrement: costs[ResourceType.stone] ?? 0,
+                },
+                [ResourceType.food]: {
+                  decrement: costs[ResourceType.food] ?? 0,
+                },
+                [ResourceType.gold]: {
+                  decrement: costs[ResourceType.gold] ?? 0,
+                },
+              },
+            },
+          },
         });
       }
 
