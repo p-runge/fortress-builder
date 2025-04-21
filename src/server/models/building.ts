@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BuildingType } from "../db/client";
+import { BuildingType, ResourceType } from "../db/client";
 
 export const BuildingSchema = z.object({
   id: z.string(),
@@ -9,15 +9,74 @@ export const BuildingSchema = z.object({
 });
 export type Building = z.infer<typeof BuildingSchema>;
 
-export const BuildingUpgradeTimes: Record<
+type BuildingUpgradeData = {
+  time: number; // in seconds
+  costs: Partial<Record<ResourceType, number>>;
+};
+
+export const BuildingUpgradeMetric: Record<
   BuildingType,
-  Record<number, number>
+  Record<number, BuildingUpgradeData>
 > = {
   [BuildingType.townhall]: {
-    2: 5,
-    3: 20,
-    4: 90,
-    5: 300,
+    2: {
+      time: 60,
+      costs: {
+        [ResourceType.wood]: 100,
+        [ResourceType.stone]: 50,
+      },
+    },
+    3: {
+      time: 120,
+      costs: {
+        [ResourceType.wood]: 2000,
+        [ResourceType.stone]: 1000,
+      },
+    },
+    4: {
+      time: 180,
+      costs: {
+        [ResourceType.wood]: 50000,
+        [ResourceType.stone]: 25000,
+      },
+    },
+    5: {
+      time: 240,
+      costs: {
+        [ResourceType.wood]: 2000000,
+        [ResourceType.stone]: 1000000,
+      },
+    },
+  },
+  [BuildingType.storage]: {
+    2: {
+      time: 60,
+      costs: {
+        [ResourceType.wood]: 100,
+        [ResourceType.stone]: 50,
+      },
+    },
+    3: {
+      time: 120,
+      costs: {
+        [ResourceType.wood]: 2000,
+        [ResourceType.stone]: 1000,
+      },
+    },
+    4: {
+      time: 180,
+      costs: {
+        [ResourceType.wood]: 50000,
+        [ResourceType.stone]: 25000,
+      },
+    },
+    5: {
+      time: 240,
+      costs: {
+        [ResourceType.wood]: 2000000,
+        [ResourceType.stone]: 1000000,
+      },
+    },
   },
 };
-export type BuildingUpgradeTimes = typeof BuildingUpgradeTimes;
+export type BuildingUpgradeMetric = typeof BuildingUpgradeMetric;

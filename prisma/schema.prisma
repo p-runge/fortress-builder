@@ -70,7 +70,7 @@ model VerificationToken {
 
 enum BuildingType {
   townhall
-  // storage
+  storage
   // farm
   // sawmill
   // mine
