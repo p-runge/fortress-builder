@@ -1,6 +1,6 @@
 "use client";
 
-import { Building, BuildingUpgradeMetric } from "~/server/models/building";
+import { Building, BuildingMetric } from "~/server/models/building";
 import { Button } from "./ui/button";
 import { api } from "~/api/client";
 import { useState, useEffect } from "react";
@@ -50,7 +50,7 @@ export default function UpgradeBuildingEvent({
       <p className="text-gray-500">
         {!building.upgradeStart // no upgrade in progress, show upgrade time
           ? `Upgrade time: ${
-              BuildingUpgradeMetric[building.type][building.level + 1].time
+              BuildingMetric[building.type].upgrades[building.level + 1].time
             }s`
           : remainingTime > 0 // upgrade in progress, show remaining time
           ? `Upgrading... ${remainingTime}s remaining`
@@ -93,7 +93,7 @@ function calculateRemainingUpgradeTime(building: Building): number {
 
   const upgradeEnd = new Date(
     building.upgradeStart.getTime() +
-      BuildingUpgradeMetric[building.type][building.level + 1].time * 1000
+      BuildingMetric[building.type].upgrades[building.level + 1].time * 1000
   );
 
   if (upgradeEnd < now) {

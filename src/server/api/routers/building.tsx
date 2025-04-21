@@ -4,10 +4,7 @@ import { z } from "zod";
 import { eventEmitter } from "~/server/api/event-emitter";
 import { db } from "~/server/db";
 import { jobQueue } from "~/server/jobs/job-queue";
-import {
-  BuildingSchema,
-  BuildingUpgradeMetric,
-} from "~/server/models/building";
+import { BuildingSchema, BuildingMetric } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
@@ -89,7 +86,7 @@ export const buildingRouter = router({
 
       // start job to upgrade building after *upgradeTime* seconds
       const upgradeTime =
-        BuildingUpgradeMetric[building.type][building.level + 1].time;
+        BuildingMetric[building.type].upgrades[building.level + 1].time;
       await jobQueue.addJob(
         "upgrade-building",
         { buildingId: input.id },
