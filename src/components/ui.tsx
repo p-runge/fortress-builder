@@ -11,7 +11,6 @@ import { api } from "~/api/server";
 import { SignOutButton } from "~/components/auth-buttons";
 import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
-import AddResourceButton from "./add-resource-button";
 import InventoryDialog from "./inventory-dialog";
 import ShopDialog from "./shop-dialog";
 
@@ -28,7 +27,7 @@ export default async function UI({ children }: { children: React.ReactNode }) {
         {/* top menu */}
         <div className="col-span-3 p-2 pointer-events-auto flex justify-between gap-12">
           {/* resources without gems */}
-          <div className="flex gap-4">
+          <div className="flex gap-8">
             {Object.values(ResourceType)
               .filter((resource) => resource !== ResourceType.gems)
               .map((resource) => (
@@ -39,11 +38,6 @@ export default async function UI({ children }: { children: React.ReactNode }) {
                       resources[resource]
                     )}
                   </span>
-                  <AddResourceButton
-                    type={resource}
-                    amount={100000}
-                    className="ml-2"
-                  />
                 </div>
               ))}
           </div>
@@ -57,11 +51,6 @@ export default async function UI({ children }: { children: React.ReactNode }) {
                   resources.gems
                 )}
               </span>
-              <AddResourceButton
-                type={ResourceType.gems}
-                amount={100000}
-                className="ml-4"
-              />
             </div>
             {/* user info */}
             <div className="flex items-center gap-2">

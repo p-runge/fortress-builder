@@ -51,32 +51,4 @@ export const resourceRouter = router({
         },
       });
     }),
-
-  add: authedProcedure
-    .input(
-      z.object({
-        type: z.nativeEnum(ResourceType),
-        amount: z.number().int().positive(),
-      })
-    )
-    .output(z.void())
-    .mutation(async ({ input, ctx: { session } }) => {
-      // create or update resource for user
-      const resource = await db.userResources.findUniqueOrThrow({
-        where: {
-          userId: session.user.id,
-        },
-      });
-
-      await db.userResources.update({
-        where: {
-          id: resource.id,
-        },
-        data: {
-          [input.type]: {
-            increment: input.amount,
-          },
-        },
-      });
-    }),
 });
