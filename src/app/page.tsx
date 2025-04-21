@@ -3,6 +3,8 @@ import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import UpgradeBuildingEvent from "~/components/upgrade-building-event";
 import AddBuildingDialog from "./_components/add-building-dialog";
+import { BuildingMetric } from "~/server/models/building";
+import { ResourceType } from "~/server/db/client";
 
 export default async function Home() {
   const buildings = await api.building.getAll();
@@ -19,6 +21,25 @@ export default async function Home() {
               <div className="text-center">
                 <h2 className="text-xl font-semibold">{building.type}</h2>
                 <p className="text-gray-500">Level: {building.level}</p>
+                {/* costs */}
+                <div>
+                  <div className="text-gray-500 flex gap-4">
+                    {Object.values(ResourceType)
+                      .map((resource) => ({
+                        resource,
+                        amount:
+                          BuildingMetric[building.type].upgrades[
+                            building.level + 1
+                          ]?.costs[resource],
+                      }))
+                      .filter(({ amount }) => !!amount)
+                      .map(({ resource, amount }) => (
+                        <span key={resource}>
+                          {resource}: {amount}
+                        </span>
+                      ))}
+                  </div>
+                </div>
               </div>
               <UpgradeBuildingEvent building={building} />
             </div>

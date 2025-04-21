@@ -86,7 +86,7 @@ export const buildingRouter = router({
 
       // start job to upgrade building after *upgradeTime* seconds
       const upgradeTime =
-        BuildingMetric[building.type].upgrades[building.level + 1].time;
+        BuildingMetric[building.type].upgrades[building.level + 1]?.time ?? 0;
       await jobQueue.addJob(
         "upgrade-building",
         { buildingId: input.id },

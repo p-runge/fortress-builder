@@ -45,13 +45,14 @@ export default function UpgradeBuildingEvent({
     return () => clearInterval(interval);
   }, [building]);
 
+  const upgradeTime =
+    BuildingMetric[building.type].upgrades[building.level + 1]?.time;
+
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       <p className="text-gray-500">
         {!building.upgradeStart // no upgrade in progress, show upgrade time
-          ? `Upgrade time: ${
-              BuildingMetric[building.type].upgrades[building.level + 1].time
-            }s`
+          ? upgradeTime && `Upgrade time: ${upgradeTime}s`
           : remainingTime > 0 // upgrade in progress, show remaining time
           ? `Upgrading... ${remainingTime}s remaining`
           : // upgrade finished, show finished message
@@ -79,6 +80,12 @@ export default function UpgradeBuildingEvent({
 }
 
 function calculateRemainingUpgradeTime(building: Building): number {
+  const upgradetime =
+    BuildingMetric[building.type].upgrades[building.level + 1]?.time;
+  if (upgradetime === undefined) {
+    return 0;
+  }
+
   if (!building.upgradeStart) {
     return 0;
   }
@@ -92,8 +99,7 @@ function calculateRemainingUpgradeTime(building: Building): number {
   }
 
   const upgradeEnd = new Date(
-    building.upgradeStart.getTime() +
-      BuildingMetric[building.type].upgrades[building.level + 1].time * 1000
+    building.upgradeStart.getTime() + upgradetime * 1000
   );
 
   if (upgradeEnd < now) {
