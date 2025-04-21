@@ -213,7 +213,7 @@ const itemEffectMap: Record<
         resources: {
           update: {
             food: {
-              increment: 10000 * amount,
+              increment: 1000000 * amount,
             },
           },
         },
@@ -245,7 +245,7 @@ const itemEffectMap: Record<
         resources: {
           update: {
             wood: {
-              increment: 10000 * amount,
+              increment: 1000000 * amount,
             },
           },
         },
@@ -277,7 +277,7 @@ const itemEffectMap: Record<
         resources: {
           update: {
             stone: {
-              increment: 10000 * amount,
+              increment: 1000000 * amount,
             },
           },
         },
@@ -309,7 +309,7 @@ const itemEffectMap: Record<
         resources: {
           update: {
             gold: {
-              increment: 10000 * amount,
+              increment: 1000000 * amount,
             },
           },
         },
