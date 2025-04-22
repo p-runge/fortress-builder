@@ -13,9 +13,11 @@ import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
 import InventoryDialog from "./inventory-dialog";
 import ShopDialog from "./shop-dialog";
+import { getLocale } from "~/i18n";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();
+  const locale = getLocale();
 
   const resources = await api.resource.getAll();
 
@@ -34,9 +36,7 @@ export default async function UI({ children }: { children: React.ReactNode }) {
                 <div key={resource} className="text-xl">
                   <span>{resourceIconMap[resource]}</span>{" "}
                   <span>
-                    {new Intl.NumberFormat(navigator.language).format(
-                      resources[resource]
-                    )}
+                    {new Intl.NumberFormat(locale).format(resources[resource])}
                   </span>
                 </div>
               ))}
@@ -47,9 +47,7 @@ export default async function UI({ children }: { children: React.ReactNode }) {
             <div className="text-xl">
               <span className="text-blue-400">{resourceIconMap.gems}</span>{" "}
               <span>
-                {new Intl.NumberFormat(navigator.language).format(
-                  resources.gems
-                )}
+                {new Intl.NumberFormat(locale).format(resources.gems)}
               </span>
             </div>
             {/* user info */}
