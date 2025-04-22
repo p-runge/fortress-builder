@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { getLocale } from "~/i18n";
 
 export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function ShopDialog() {
   const { mutateAsync: buyItem } = api.item.buy.useMutation();
 
   const router = useRouter();
+  const locale = getLocale();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -75,7 +77,7 @@ export default function ShopDialog() {
                   size="lg"
                   className="cursor-pointer mt-2 text-blue-400"
                 />{" "}
-                <span>{item.cost}</span>
+                <span>{new Intl.NumberFormat(locale).format(item.cost)}</span>
               </div>
             ))
           ) : (

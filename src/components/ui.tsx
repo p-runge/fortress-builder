@@ -9,11 +9,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { api } from "~/api/server";
 import { SignOutButton } from "~/components/auth-buttons";
+import { getLocale } from "~/i18n";
 import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
 import InventoryDialog from "./inventory-dialog";
 import ShopDialog from "./shop-dialog";
-import { getLocale } from "~/i18n";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();

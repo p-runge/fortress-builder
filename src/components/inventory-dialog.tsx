@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { getLocale } from "~/i18n";
 
 export default function InventoryDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +28,7 @@ export default function InventoryDialog() {
   const { mutateAsync: consumeItem } = api.item.use.useMutation();
 
   const router = useRouter();
+  const locale = getLocale();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -79,7 +81,7 @@ export default function InventoryDialog() {
                   size="lg"
                   className="cursor-pointer mt-2"
                 />{" "}
-                <span>{item.amount}</span>
+                <span>{new Intl.NumberFormat(locale).format(item.amount)}</span>
               </div>
             ))
           ) : (

@@ -2,12 +2,14 @@ import { api } from "~/api/server";
 import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import UpgradeBuildingEvent from "~/components/upgrade-building-event";
-import AddBuildingDialog from "./_components/add-building-dialog";
-import { BuildingMetric } from "~/server/models/building";
+import { getLocale } from "~/i18n";
 import { ResourceType } from "~/server/db/client";
+import { BuildingMetric } from "~/server/models/building";
+import AddBuildingDialog from "./_components/add-building-dialog";
 
 export default async function Home() {
   const buildings = await api.building.getAll();
+  const locale = getLocale();
 
   return (
     <ScalingFrame>
@@ -35,7 +37,8 @@ export default async function Home() {
                       .filter(({ amount }) => !!amount)
                       .map(({ resource, amount }) => (
                         <span key={resource}>
-                          {resource}: {amount}
+                          {resource}:{" "}
+                          {new Intl.NumberFormat(locale).format(amount!)}
                         </span>
                       ))}
                   </div>
