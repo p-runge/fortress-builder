@@ -55,7 +55,7 @@ export class JobQueue {
       "BYSCORE",
       "LIMIT",
       0,
-      limit
+      limit,
     );
 
     if (!jobIds.length) return [];

@@ -42,7 +42,7 @@ export default function RootLayout({
       className={cn(
         geistSans.variable,
         geistMono.variable,
-        "bg-background text-foreground"
+        "bg-background text-foreground",
       )}
     >
       <body className="flex flex-col h-screen">

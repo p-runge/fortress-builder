@@ -26,7 +26,7 @@ registerJobHandler(
       },
     });
     console.log(
-      `Building ${buildingId} upgraded to level ${building.level + 1}`
+      `Building ${buildingId} upgraded to level ${building.level + 1}`,
     );
 
     eventEmitter.emit("upgrade-building", {
@@ -41,5 +41,5 @@ registerJobHandler(
     //   level: building.level + 1,
     //   timestamp: new Date().toISOString(),
     // };
-  }
+  },
 );

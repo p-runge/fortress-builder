@@ -8,8 +8,8 @@ const ResourcesSchema = z.object(
     Object.keys(ResourceType).map((key) => [
       key,
       z.number().int().nonnegative(),
-    ])
-  ) as Record<ResourceType, z.ZodNumber>
+    ]),
+  ) as Record<ResourceType, z.ZodNumber>,
 );
 // type Resources = z.infer<typeof ResourcesSchema>;
 

@@ -21,7 +21,7 @@ export default function UpgradeBuildingEvent({
         console.log("Building upgraded:", data);
         router.refresh();
       },
-    }
+    },
   );
   const { mutateAsync: startUpgrade } = api.building.startUpgrade.useMutation();
   const [isLoading, setIsLoading] = useState(false);
@@ -54,9 +54,9 @@ export default function UpgradeBuildingEvent({
         {!building.upgradeStart // no upgrade in progress, show upgrade time
           ? upgradeTime && `Upgrade time: ${upgradeTime}s`
           : remainingTime > 0 // upgrade in progress, show remaining time
-          ? `Upgrading... ${remainingTime}s remaining`
-          : // upgrade finished, show finished message
-            "Upgrade finished"}
+            ? `Upgrading... ${remainingTime}s remaining`
+            : // upgrade finished, show finished message
+              "Upgrade finished"}
       </p>
       <Button
         disabled={isLoading || !!building.upgradeStart || building.level >= 5}
@@ -93,13 +93,13 @@ function calculateRemainingUpgradeTime(building: Building): number {
   const now = new Date();
   if (building.upgradeStart > now) {
     console.warn(
-      "Upgrade start time is in the future. This should not happen."
+      "Upgrade start time is in the future. This should not happen.",
     );
     return 0;
   }
 
   const upgradeEnd = new Date(
-    building.upgradeStart.getTime() + upgradetime * 1000
+    building.upgradeStart.getTime() + upgradetime * 1000,
   );
 
   if (upgradeEnd < now) {
@@ -107,7 +107,7 @@ function calculateRemainingUpgradeTime(building: Building): number {
   }
 
   const remainingTime = Math.floor(
-    (upgradeEnd.getTime() - now.getTime()) / 1000
+    (upgradeEnd.getTime() - now.getTime()) / 1000,
   );
 
   return remainingTime;

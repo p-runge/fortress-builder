@@ -139,7 +139,7 @@ export const buildingRouter = router({
       await jobQueue.addJob(
         "upgrade-building",
         { buildingId: input.id },
-        upgradeTime * 1000
+        upgradeTime * 1000,
       );
     }),
 
@@ -169,7 +169,7 @@ export const buildingRouter = router({
           for await (const iteration of iterator) {
             console.log(
               "Received event for building upgrade, iteration:",
-              iteration
+              iteration,
             );
             const { id, level } = iteration[0] as { id: string; level: number };
             if (id !== input.id) {

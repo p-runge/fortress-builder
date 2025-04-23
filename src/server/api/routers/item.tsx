@@ -136,7 +136,7 @@ export const itemRouter = router({
 
   use: authedProcedure
     .input(
-      z.object({ type: z.nativeEnum(ItemType), amount: z.number().default(1) })
+      z.object({ type: z.nativeEnum(ItemType), amount: z.number().default(1) }),
     )
     .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {

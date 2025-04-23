@@ -48,7 +48,7 @@ export const createTRPCContext = cache(async () => {
             id: userId,
           },
         }
-      : null
+      : null,
   );
   if (!parsedSession.success) {
     console.error("Session validation failed", parsedSession.error);
@@ -74,18 +74,18 @@ const t = initTRPC.context<typeof createTRPCContext>().create();
  * that can be used throughout the router
  */
 export const router = t.router;
-const rootProcedure = t.procedure.use(async function waitForArtificialDelay(
-  opts
-) {
-  // this is only ever "true" in dev mode which is enforced by the transform schema in env.ts
-  if (env.DEV_SLOW_CONNECTION) {
-    console.warn(
-      "⚠️ Slow connection enabled ⚠️ Update your .env to disable it"
-    );
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-  return opts.next();
-});
+const rootProcedure = t.procedure.use(
+  async function waitForArtificialDelay(opts) {
+    // this is only ever "true" in dev mode which is enforced by the transform schema in env.ts
+    if (env.DEV_SLOW_CONNECTION) {
+      console.warn(
+        "⚠️ Slow connection enabled ⚠️ Update your .env to disable it",
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    return opts.next();
+  },
+);
 export const publicProcedure = rootProcedure;
 export const createCallerFactory = t.createCallerFactory;
 

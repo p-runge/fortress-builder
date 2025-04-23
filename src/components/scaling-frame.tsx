@@ -35,7 +35,7 @@ export default function ScalingFrame({
 
       const scale = Math.min(
         (1 / WIDTH) * frameRef.current.getBoundingClientRect().width,
-        (1 / HEIGHT) * frameRef.current.getBoundingClientRect().height
+        (1 / HEIGHT) * frameRef.current.getBoundingClientRect().height,
       );
       setScale(scale);
       ref.current.style.transform = `scale(${scale})`;
@@ -57,7 +57,7 @@ export default function ScalingFrame({
           ref={ref}
           className={cn(
             "bg-background text-foreground shadow select-none",
-            initialized ? "opacity-100" : "opacity-0"
+            initialized ? "opacity-100" : "opacity-0",
           )}
           style={{
             height: HEIGHT,

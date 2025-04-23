@@ -7,7 +7,7 @@ const jobHandlers: Record<string, (payload: any) => Promise<any>> = {};
 // Register a job handler
 export function registerJobHandler<T, R>(
   jobType: string,
-  handler: (payload: T) => Promise<R>
+  handler: (payload: T) => Promise<R>,
 ) {
   jobHandlers[jobType] = handler as any;
 }
@@ -34,7 +34,7 @@ async function processJob(job: Job): Promise<void> {
     // Mark job as failed
     await jobQueue.failJob(
       job.id,
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
     console.error(`Job ${job.id} of type ${job.type} failed:`, error);
   }
