@@ -3,6 +3,7 @@ import {
   faFish,
   faGem,
   faMountain,
+  faPlusSquare,
   faTree,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +14,7 @@ import { getLocale } from "~/i18n";
 import { auth } from "~/server/auth";
 import { ResourceType } from "~/server/db/client";
 import InventoryDialog from "./inventory-dialog";
+import RealMoneyShopDialog from "./real-money-shop-dialog";
 import ShopDialog from "./shop-dialog";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
@@ -42,14 +44,25 @@ export default async function UI({ children }: { children: React.ReactNode }) {
               ))}
           </div>
 
-          <div className="flex items-center gap-12">
+          <div className="flex cursor-pointer items-center gap-12">
             {/* gems */}
-            <div className="text-xl">
-              <span className="text-blue-400">{resourceIconMap.gems}</span>{" "}
-              <span>
-                {new Intl.NumberFormat(locale).format(resources.gems)}
-              </span>
-            </div>
+            <RealMoneyShopDialog
+              trigger={
+                <span className="group text-xl">
+                  <span className="text-blue-400">
+                    {<FontAwesomeIcon icon={faGem} />}
+                  </span>{" "}
+                  <span>
+                    {new Intl.NumberFormat(locale).format(resources.gems)}
+                  </span>
+                  <FontAwesomeIcon
+                    icon={faPlusSquare}
+                    className="ml-2 text-amber-400 transition-transform group-hover:scale-125"
+                  />
+                </span>
+              }
+            />
+
             {/* user info */}
             <div className="flex items-center gap-2">
               <Image
