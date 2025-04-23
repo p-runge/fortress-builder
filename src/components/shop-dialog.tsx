@@ -2,9 +2,9 @@
 
 import { faGem, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { api } from "~/api/client";
+// import { api } from "~/api/client";
 import {
   Dialog,
   DialogContent,
@@ -13,19 +13,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { getLocale } from "~/i18n";
+// import { getLocale } from "~/i18n";
 
 export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoadingBuy, setIsLoadingBuy] = useState(false);
+  // const [isLoadingBuy, setIsLoadingBuy] = useState(false);
 
-  const { data: items, isLoading: isLoadingItems } =
-    api.item.getShopItems.useQuery();
+  // const { data: items, isLoading: isLoadingItems } =
+  //   api.item.getShopItems.useQuery();
 
-  const { mutateAsync: buyItem } = api.item.buy.useMutation();
+  // const { mutateAsync: buyItem } = api.item.buy.useMutation();
 
-  const router = useRouter();
-  const locale = getLocale();
+  // const router = useRouter();
+  // const locale = getLocale();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -38,12 +38,16 @@ export default function ShopDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Resource Items</DialogTitle>
+          <div className="flex justify-between">
+            <DialogTitle>Resource Items</DialogTitle>
+            <FontAwesomeIcon icon={faGem}></FontAwesomeIcon>
+          </div>
           <DialogDescription>
             Use these items to give you an instant boost in resources.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-3 gap-4 py-4">
+        <div className="grid grid-cols-2 gap-4"></div>
+        {/* <div className="grid grid-cols-3 gap-4 py-4">
           {isLoadingItems ? (
             <div className="flex items-center justify-center">
               <p className="text-gray-500">Loading...</p>
@@ -64,13 +68,13 @@ export default function ShopDialog() {
                   setIsLoadingBuy(false);
                 }}
               >
-                <div className="flex items-center">
-                  {/* <img
+                <div className="flex items-center"> */}
+        {/* <img
                     src={`/images/${item.type}.png`}
                     alt={item.type}
                     className="w-8 h-8 mr-2"
                   /> */}
-                  <span>{item.type}</span>
+        {/* <span>{item.type}</span>
                 </div>
                 <FontAwesomeIcon
                   icon={faGem}
@@ -85,7 +89,8 @@ export default function ShopDialog() {
               <p className="text-gray-500">No items available</p>
             </div>
           )}
-        </div>
+        </div> */}
+        test 213
       </DialogContent>
     </Dialog>
   );
