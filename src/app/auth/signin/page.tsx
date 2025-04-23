@@ -10,7 +10,7 @@ export default async function SignInPage() {
           <p className="mb-1">
             This is a private project for me to play around with, so I would not
             recommend creating an account if your data matters to you. God knows
-            that I&apos;m doing with it.
+            what I&apos;m doing with it.
           </p>
           <p className="mb-1">
             If you like to live dangerously, go ahead but be warned – it has:
