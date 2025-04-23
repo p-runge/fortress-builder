@@ -7,6 +7,17 @@ export const env = createEnv({
     DISCORD_CLIENT_ID: z.string().min(1),
     DISCORD_CLIENT_SECRET: z.string().min(1),
     REDIS_URL: z.string().url(),
+    DEV_SLOW_CONNECTION: z
+      .string()
+      .optional()
+      .transform((val) => {
+        // never allow this outside of development
+        if (process.env.NODE_ENV !== "development") {
+          return false;
+        }
+
+        return val === "true";
+      }),
   },
   client: {
     // NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
@@ -16,6 +27,7 @@ export const env = createEnv({
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     REDIS_URL: process.env.REDIS_URL,
+    DEV_SLOW_CONNECTION: process.env.DEV_SLOW_CONNECTION,
     // NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
   },
 });

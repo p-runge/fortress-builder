@@ -3,6 +3,7 @@ import { cache } from "react";
 import { auth, signIn } from "../auth";
 import { z } from "zod";
 import { db } from "../db";
+import { env } from "~/env";
 
 const SessionSchema = z
   .object({
@@ -73,11 +74,23 @@ const t = initTRPC.context<typeof createTRPCContext>().create();
  * that can be used throughout the router
  */
 export const router = t.router;
-export const publicProcedure = t.procedure;
+const rootProcedure = t.procedure.use(async function waitForArtificialDelay(
+  opts
+) {
+  // this is only ever "true" in dev mode which is enforced by the transform schema in env.ts
+  if (env.DEV_SLOW_CONNECTION) {
+    console.warn(
+      "⚠️ Slow connection enabled ⚠️ Update your .env to disable it"
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  return opts.next();
+});
+export const publicProcedure = rootProcedure;
 export const createCallerFactory = t.createCallerFactory;
 
 // procedure that asserts that the user is logged in
-export const authedProcedure = t.procedure.use(async function isAuthed(opts) {
+export const authedProcedure = rootProcedure.use(async function isAuthed(opts) {
   const { ctx } = opts;
   const { session } = ctx;
 
