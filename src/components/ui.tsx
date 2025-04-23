@@ -25,9 +25,9 @@ export default async function UI({ children }: { children: React.ReactNode }) {
     <div className="relative h-full">
       {children}
       {/* second col as big as possible */}
-      <div className="absolute inset-0 pointer-events-none grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto] gap-4">
+      <div className="pointer-events-none absolute inset-0 grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto] gap-4">
         {/* top menu */}
-        <div className="col-span-3 p-2 pointer-events-auto flex justify-between gap-12">
+        <div className="pointer-events-auto col-span-3 flex justify-between gap-12 p-2">
           {/* resources without gems */}
           <div className="flex gap-8">
             {Object.values(ResourceType)
@@ -66,13 +66,13 @@ export default async function UI({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* left menu */}
-        <div className="p-2 pointer-events-auto"></div>
+        <div className="pointer-events-auto p-2"></div>
 
         {/* right menu */}
-        <div className="col-start-3 p-2 pointer-events-auto"></div>
+        <div className="pointer-events-auto col-start-3 p-2"></div>
 
         {/* bottom menu */}
-        <div className="col-span-3 pointer-events-auto flex justify-end">
+        <div className="pointer-events-auto col-span-3 flex justify-end">
           <InventoryDialog />
           <ShopDialog />
         </div>

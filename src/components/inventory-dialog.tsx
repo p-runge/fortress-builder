@@ -36,7 +36,7 @@ export default function InventoryDialog() {
         <FontAwesomeIcon
           icon={faBox}
           size="2x"
-          className="cursor-pointer m-2 hover:scale-110 transition-transform"
+          className="m-2 cursor-pointer transition-transform hover:scale-110"
         />
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
@@ -55,7 +55,7 @@ export default function InventoryDialog() {
             items.map((item) => (
               <div
                 key={item.type}
-                className="cursor-pointer p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="cursor-pointer rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
                 onClick={async () => {
                   if (isLoadingUse) return;
 
@@ -79,7 +79,7 @@ export default function InventoryDialog() {
                 <FontAwesomeIcon
                   icon={faHashtag}
                   size="lg"
-                  className="cursor-pointer mt-2"
+                  className="mt-2 cursor-pointer"
                 />{" "}
                 <span>{new Intl.NumberFormat(locale).format(item.amount)}</span>
               </div>

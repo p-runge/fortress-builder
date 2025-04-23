@@ -28,7 +28,7 @@ function SignInButtonContent() {
   return (
     <>
       <Button
-        className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
+        className="bg-[#5865F2] text-white hover:bg-[#4752C4]"
         onClick={() => {
           if (!callbackUrl) {
             console.error("Callback URL is not set");

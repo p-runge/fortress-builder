@@ -14,18 +14,18 @@ export default async function Home() {
   return (
     <ScalingFrame>
       <UI>
-        <main className="grid grid-cols-3 pt-16 px-4 gap-4">
+        <main className="grid grid-cols-3 gap-4 px-4 pt-16">
           {buildings.map((building) => (
             <div
               key={building.id}
-              className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4"
+              className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm"
             >
               <div className="text-center">
                 <h2 className="text-xl font-semibold">{building.type}</h2>
                 <p className="text-gray-500">Level: {building.level}</p>
                 {/* costs */}
                 <div>
-                  <div className="text-gray-500 flex gap-4">
+                  <div className="flex gap-4 text-gray-500">
                     {Object.values(ResourceType)
                       .map((resource) => ({
                         resource,
@@ -50,7 +50,7 @@ export default async function Home() {
         </main>
 
         {/* add building button */}
-        <div className="flex flex-col items-center justify-center p-4 border border-border rounded shadow-sm gap-4">
+        <div className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm">
           <AddBuildingDialog />
         </div>
       </UI>

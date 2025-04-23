@@ -45,7 +45,7 @@ export default function RootLayout({
         "bg-background text-foreground",
       )}
     >
-      <body className="flex flex-col h-screen">
+      <body className="flex h-screen flex-col">
         <ThemeProvider>
           <SessionProvider>
             <TRPCProvider>{children}</TRPCProvider>

@@ -33,7 +33,7 @@ export default function ShopDialog() {
         <FontAwesomeIcon
           icon={faShoppingCart}
           size="2x"
-          className="cursor-pointer m-2 hover:scale-110 transition-transform"
+          className="m-2 cursor-pointer transition-transform hover:scale-110"
         />
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
@@ -52,7 +52,7 @@ export default function ShopDialog() {
             items.map((item) => (
               <div
                 key={item.type}
-                className="cursor-pointer p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="cursor-pointer rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
                 onClick={async () => {
                   if (isLoadingBuy) return;
 
@@ -75,7 +75,7 @@ export default function ShopDialog() {
                 <FontAwesomeIcon
                   icon={faGem}
                   size="lg"
-                  className="cursor-pointer mt-2 text-blue-400"
+                  className="mt-2 cursor-pointer text-blue-400"
                 />{" "}
                 <span>{new Intl.NumberFormat(locale).format(item.cost)}</span>
               </div>
