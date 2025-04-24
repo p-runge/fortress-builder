@@ -7,9 +7,22 @@ import { ResourceType } from "~/server/db/client";
 import { BuildingMetric } from "~/server/models/building";
 import AddBuildingDialog from "./_components/add-building-dialog";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Partial<Record<"payment-canceled", string>>>;
+}) {
   const buildings = await api.building.getAll();
   const locale = getLocale();
+
+  const sp = await searchParams;
+  const paymentCanceled = sp["payment-canceled"] !== undefined;
+
+  if (paymentCanceled) {
+    console.log("Payment canceled");
+
+    // TODO: trigger a toast
+  }
 
   return (
     <ScalingFrame>
