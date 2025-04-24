@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TRPCProvider } from "~/api/client";
 import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
+import "@total-typescript/ts-reset";
 import "./globals.css";
 
 // set up fontawesome icons and fix icon sizes
