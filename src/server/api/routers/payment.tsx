@@ -83,8 +83,8 @@ export const paymentRouter = router({
           },
         ],
         mode: "payment",
-        success_url: `${APP_URL}/verify-payment/?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${APP_URL}/verify-payment/?canceled=true`,
+        success_url: `${APP_URL}/payment-successful/?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${APP_URL}/?payment-canceled=true`,
         metadata: {
           userId,
           productId: input.id,
