@@ -2,6 +2,7 @@ import { z } from "zod";
 import { stripe } from "~/server/payment";
 import { authedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { db } from "~/server/db";
 
 // TODO: Replace with your app's URL
 const APP_URL = "http://localhost:3000";
@@ -58,7 +59,7 @@ export const paymentRouter = router({
    */
   buyGemPackage: authedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx: { session } }) => {
       const { data: prices } = await stripe.prices.list({
         product: input.id,
         active: true,
@@ -72,8 +73,9 @@ export const paymentRouter = router({
         });
       }
 
+      const userId = session.user.id;
       const priceId = prices[0]!.id;
-      const session = await stripe.checkout.sessions.create({
+      const stripeSession = await stripe.checkout.sessions.create({
         line_items: [
           {
             price: priceId,
@@ -81,12 +83,87 @@ export const paymentRouter = router({
           },
         ],
         mode: "payment",
-        success_url: `${APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${APP_URL}?canceled=true`,
+        success_url: `${APP_URL}/verify-payment/?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${APP_URL}/verify-payment/?canceled=true`,
+        metadata: {
+          userId,
+          productId: input.id,
+        },
       });
 
-      console.log("Stripe session created:", session);
+      console.log("Stripe session created:", stripeSession);
 
-      return session.url;
+      return stripeSession.url;
+    }),
+
+  verifyPayment: authedProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .mutation(async ({ input }) => {
+      const stripeSession = await stripe.checkout.sessions.retrieve(
+        input.sessionId,
+        {
+          expand: ["line_items"],
+        },
+      );
+
+      if (!stripeSession) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Session not found.",
+        });
+      }
+
+      if (stripeSession.payment_status !== "paid") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Payment not completed.",
+        });
+      }
+
+      const userId = stripeSession.metadata?.userId;
+      const productId = stripeSession.metadata?.productId;
+      if (!userId || !productId) {
+        console.warn(
+          "⚠️ This is a very bad situation. There was a checkout session without an unknown userId or productId.",
+          "So either someone spent money and we don't know who it is,",
+          "or someone bought a product that we don't know about (any longer).",
+        );
+        // TODO: send an email to support
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User ID not found in session metadata.",
+        });
+      }
+
+      // TODO: this is probably not the right way to calculate the gems
+      // add gems to user account
+      let gemsToAdd;
+      const product = await stripe.products.retrieve(productId);
+      if (product.name === "100 Gems") {
+        gemsToAdd = 100;
+      } else if (product.name === "500 Gems") {
+        gemsToAdd = 500;
+      }
+
+      if (!gemsToAdd) {
+        console.warn(
+          "⚠️ Someone bought an unknown product. No gems were added.",
+        );
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No gems to add.",
+        });
+      }
+
+      await db.userResources.update({
+        where: { userId },
+        data: {
+          gems: {
+            increment: gemsToAdd,
+          },
+        },
+      });
     }),
 });
