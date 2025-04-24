@@ -115,7 +115,7 @@ export const paymentRouter = router({
 
       if (stripeSession.payment_status !== "paid") {
         throw new TRPCError({
-          code: "BAD_REQUEST",
+          code: "UNPROCESSABLE_CONTENT",
           message: "Payment not completed.",
         });
       }
@@ -124,7 +124,7 @@ export const paymentRouter = router({
       const productId = stripeSession.metadata?.productId;
       if (!userId || !productId) {
         console.warn(
-          "⚠️ This is a very bad situation. There was a checkout session without an unknown userId or productId.",
+          "⚠️ This is a very bad situation. There was a checkout session with an unknown userId or productId.",
           "So either someone spent money and we don't know who it is,",
           "or someone bought a product that we don't know about (any longer).",
         );
@@ -136,7 +136,7 @@ export const paymentRouter = router({
         });
       }
 
-      // TODO: this is probably not the right way to calculate the gems
+      // TODO: using the name is not the best way to identify the product
       // add gems to user account
       let gemsToAdd;
       const product = await stripe.products.retrieve(productId);
