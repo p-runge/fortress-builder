@@ -14,28 +14,28 @@ export const BuildingMetric: BuildingMetric = {
     limit: 1,
     upgrades: {
       2: {
-        time: 60,
+        time: 5,
         costs: {
           wood: 100,
           stone: 50,
         },
       },
       3: {
-        time: 120,
+        time: 10,
         costs: {
           wood: 2000,
           stone: 1000,
         },
       },
       4: {
-        time: 180,
+        time: 30,
         costs: {
           wood: 50000,
           stone: 25000,
         },
       },
       5: {
-        time: 240,
+        time: 45,
         costs: {
           wood: 2000000,
           stone: 1000000,
@@ -47,28 +47,28 @@ export const BuildingMetric: BuildingMetric = {
     limit: 1,
     upgrades: {
       2: {
-        time: 60,
+        time: 5,
         costs: {
           wood: 100,
           stone: 50,
         },
       },
       3: {
-        time: 120,
+        time: 10,
         costs: {
           wood: 2000,
           stone: 1000,
         },
       },
       4: {
-        time: 180,
+        time: 30,
         costs: {
           wood: 50000,
           stone: 25000,
         },
       },
       5: {
-        time: 240,
+        time: 45,
         costs: {
           wood: 2000000,
           stone: 1000000,
