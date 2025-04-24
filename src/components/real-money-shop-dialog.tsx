@@ -10,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { getLocale } from "~/i18n";
+import { Button } from "./ui/button";
 
 export default function RealMoneyShopDialog({
   trigger,
@@ -17,12 +19,15 @@ export default function RealMoneyShopDialog({
   trigger: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  // const [isLoadingBuy, setIsLoadingBuy] = useState(false);
+  const [isLoadingBuy, setIsLoadingBuy] = useState(false);
 
-  const { data: items, isLoading: isLoadingItems } =
-    api.item.getShopItems.useQuery();
+  const { data: gemPackages, isLoading: isLoadingItems } =
+    api.payment.getGemPackages.useQuery();
 
-  // const { mutateAsync: buyGemPackage } = api.gemPackage.buy.useMutation();
+  const { mutateAsync: buyGemPackage } =
+    api.payment.buyGemPackage.useMutation();
+
+  const locale = getLocale();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -37,8 +42,43 @@ export default function RealMoneyShopDialog({
             <div className="flex items-center justify-center">
               <p className="text-gray-500">Loading...</p>
             </div>
-          ) : items && items.length > 0 ? (
-            "// TODO: List products here"
+          ) : gemPackages && gemPackages.length > 0 ? (
+            gemPackages.map((gemPackage) => (
+              <div
+                key={gemPackage.id}
+                className="flex flex-col items-center justify-center rounded-lg border p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+              >
+                <h3 className="mb-2 text-2xl font-bold">{gemPackage.name}</h3>
+                <p className="mb-2">
+                  {Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(gemPackage.price)}
+                </p>
+                <Button
+                  disabled={isLoadingBuy}
+                  onClick={async () => {
+                    setIsLoadingBuy(true);
+                    try {
+                      const url = await buyGemPackage({
+                        id: gemPackage.id,
+                      });
+                      if (url) {
+                        window.location.href = url;
+                      }
+                    } catch (error) {
+                      console.error("Error buying gem package:", error);
+                      alert(
+                        "An error occurred while processing your purchase.",
+                      );
+                    }
+                    setIsLoadingBuy(false);
+                  }}
+                >
+                  Buy
+                </Button>
+              </div>
+            ))
           ) : (
             <div className="flex items-center justify-center">
               <p className="text-gray-500">No gem packages available</p>
