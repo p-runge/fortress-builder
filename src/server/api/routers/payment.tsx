@@ -48,6 +48,14 @@ export const paymentRouter = router({
       return gemPackages;
     }),
 
+  /**
+   * This does not fully buy the package, it only creates a checkout session with
+   * an url to redirect the user to.
+   * After the user pays, they will be redirected to the success_url or
+   * cancel_url.
+   * The success_url contains the session_id, which can be used to verify the
+   * payment and fulfill the order.
+   */
   buyGemPackage: authedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
