@@ -126,7 +126,7 @@ export class JobQueue {
   // Get a job by ID
   async getJob(jobId: string): Promise<Job | null> {
     const jobData = await redis.get(`${this.jobPrefix}${jobId}`);
-    return jobData ? JSON.parse(jobData) : null;
+    return jobData ? (JSON.parse(jobData) as Job) : null;
   }
 
   // Clean up old completed or failed jobs
