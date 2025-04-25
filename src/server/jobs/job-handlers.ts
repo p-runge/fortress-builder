@@ -1,4 +1,4 @@
-import { eventEmitter } from "~/server/api/event-emitter";
+import { eventEmitter } from "./event-emitter";
 import { db } from "../db";
 import { registerJobHandler } from "./dev-worker";
 

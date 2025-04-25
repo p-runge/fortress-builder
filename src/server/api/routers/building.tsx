@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { on } from "stream";
 import { z } from "zod";
-import { eventEmitter } from "~/server/api/event-emitter";
+import { eventEmitter } from "~/server/jobs/event-emitter";
 import { db } from "~/server/db";
 import { ResourceType } from "~/server/db/client";
 import { jobQueue } from "~/server/jobs/job-queue";

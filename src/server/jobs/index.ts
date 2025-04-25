@@ -9,7 +9,7 @@ let workerStarted = false;
  * in development mode.
  *
  */
-export async function initializeDevWorker() {
+async function initializeDevWorker() {
   if (workerStarted) return;
   workerStarted = true;
 

@@ -12,10 +12,6 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
-// Initialize the worker on the server
-import { initializeDevWorker } from "~/server/jobs";
-initializeDevWorker();
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

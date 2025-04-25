@@ -5,6 +5,9 @@ import "./src/env";
 import { seedDatabase } from "./src/server/db/seeding";
 seedDatabase();
 
+// start the worker to handle jobs in dev mode
+import "~/server/jobs";
+
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
