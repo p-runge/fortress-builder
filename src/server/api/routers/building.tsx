@@ -109,8 +109,8 @@ export const buildingRouter = router({
         });
         for (const [resource, cost] of Object.entries(costs)) {
           if (
-            user.resources!.find((r) => r.type === resource)?.amount ??
-            0 < cost
+            (user.resources!.find((r) => r.type === resource)?.amount ?? 0) <
+            cost
           ) {
             throw new TRPCError({
               code: "UNPROCESSABLE_CONTENT",
@@ -129,7 +129,7 @@ export const buildingRouter = router({
               updateMany: Object.entries(costs).map(([resource, cost]) => ({
                 where: {
                   userId: session.user.id,
-                  resource: resource as ResourceType, // type assertion
+                  type: resource as ResourceType,
                 },
                 data: {
                   amount: {
