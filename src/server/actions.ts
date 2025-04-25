@@ -5,7 +5,7 @@ import { api } from "~/api/server";
 import { BuildingType } from "./db/client";
 
 export async function addBuilding(type: BuildingType) {
-  await api.building.add({ type });
+  await api.building.build({ type });
   revalidatePath("/");
 }
 

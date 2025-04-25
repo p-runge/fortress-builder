@@ -27,10 +27,30 @@ export const buildingRouter = router({
       });
     }),
 
-  add: authedProcedure
+  build: authedProcedure
     .input(z.object({ type: BuildingSchema.shape.type }))
     .output(z.string())
     .mutation(async ({ input, ctx: { session } }) => {
+      const resources = await db.resource.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        select: {
+          type: true,
+          amount: true,
+        },
+      });
+
+      const costs = BuildingMetric[input.type].upgrades[1]?.costs ?? {};
+      for (const [resource, cost] of Object.entries(costs)) {
+        if ((resources.find((r) => r.type === resource)?.amount ?? 0) < cost) {
+          throw new TRPCError({
+            code: "UNPROCESSABLE_CONTENT",
+            message: `Not enough ${resource} to build building.`,
+          });
+        }
+      }
+
       const { id } = await db.building.create({
         select: {
           id: true,
