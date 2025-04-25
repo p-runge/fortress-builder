@@ -13,6 +13,10 @@ export const BuildingMetric: BuildingMetric = {
   [BuildingType.townhall]: {
     limit: 1,
     upgrades: {
+      1: {
+        time: 0,
+        costs: {},
+      },
       2: {
         time: 5,
         costs: {
@@ -46,6 +50,13 @@ export const BuildingMetric: BuildingMetric = {
   [BuildingType.storage]: {
     limit: 1,
     upgrades: {
+      1: {
+        time: 0,
+        costs: {
+          wood: 10,
+          stone: 5,
+        },
+      },
       2: {
         time: 5,
         costs: {
