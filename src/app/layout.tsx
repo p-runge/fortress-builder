@@ -10,6 +10,7 @@ import "./globals.css";
 // set up fontawesome icons and fix icon sizes
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Toaster } from "~/components/ui/sonner";
 config.autoAddCss = false;
 
 const geistSans = Geist({
@@ -45,7 +46,10 @@ export default function RootLayout({
       <body className="flex h-screen flex-col">
         <ThemeProvider>
           <SessionProvider>
-            <TRPCProvider>{children}</TRPCProvider>
+            <TRPCProvider>
+              {children}
+              <Toaster />
+            </TRPCProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>
