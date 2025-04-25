@@ -53,13 +53,16 @@ export const itemRouter = router({
         select: {
           resources: {
             select: {
-              gems: true,
+              amount: true,
+            },
+            where: {
+              type: "gems",
             },
           },
         },
       });
 
-      if (!user.resources || user.resources.gems < totalCost) {
+      if (!user.resources || (user.resources[0]?.amount ?? 0) < totalCost) {
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
           message: "Not enough gems",
@@ -73,8 +76,16 @@ export const itemRouter = router({
         data: {
           resources: {
             update: {
-              gems: {
-                decrement: totalCost,
+              where: {
+                userId_type: {
+                  type: "gems",
+                  userId: session.user.id,
+                },
+              },
+              data: {
+                amount: {
+                  decrement: totalCost,
+                },
               },
             },
           },
@@ -196,8 +207,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            food: {
-              increment: 1000 * amount,
+            where: {
+              userId_type: {
+                type: "food",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000 * amount,
+              },
             },
           },
         },
@@ -212,8 +231,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            food: {
-              increment: 1000000 * amount,
+            where: {
+              userId_type: {
+                type: "food",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000000 * amount,
+              },
             },
           },
         },
@@ -228,8 +255,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            wood: {
-              increment: 1000 * amount,
+            where: {
+              userId_type: {
+                type: "wood",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000 * amount,
+              },
             },
           },
         },
@@ -244,8 +279,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            wood: {
-              increment: 1000000 * amount,
+            where: {
+              userId_type: {
+                type: "wood",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000000 * amount,
+              },
             },
           },
         },
@@ -260,8 +303,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            stone: {
-              increment: 1000 * amount,
+            where: {
+              userId_type: {
+                type: "stone",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000 * amount,
+              },
             },
           },
         },
@@ -276,8 +327,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            stone: {
-              increment: 1000000 * amount,
+            where: {
+              userId_type: {
+                type: "stone",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000000 * amount,
+              },
             },
           },
         },
@@ -292,8 +351,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            gold: {
-              increment: 1000 * amount,
+            where: {
+              userId_type: {
+                type: "gold",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000 * amount,
+              },
             },
           },
         },
@@ -308,8 +375,16 @@ const itemEffectMap: Record<
       data: {
         resources: {
           update: {
-            gold: {
-              increment: 1000000 * amount,
+            where: {
+              userId_type: {
+                type: "gold",
+                userId,
+              },
+            },
+            data: {
+              amount: {
+                increment: 1000000 * amount,
+              },
             },
           },
         },

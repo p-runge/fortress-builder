@@ -17,38 +17,22 @@ export const resourceRouter = router({
   getAll: authedProcedure
     .output(ResourcesSchema)
     .query(async ({ ctx: { session } }) => {
-      const resources = await db.userResources.findUnique({
+      const resources = await db.resource.findMany({
         select: {
-          gems: true,
-          food: true,
-          wood: true,
-          stone: true,
-          gold: true,
+          type: true,
+          amount: true,
         },
         where: {
           userId: session.user.id,
         },
       });
 
-      if (resources) {
-        return resources;
-      }
-      // if no resources found, create them
-      return db.userResources.create({
-        select: {
-          gems: true,
-          food: true,
-          wood: true,
-          stone: true,
-          gold: true,
-        },
-        data: {
-          userId: session.user.id,
-          food: 0,
-          wood: 0,
-          stone: 0,
-          gold: 0,
-        },
-      });
+      const resourcesMap = {
+        ...(Object.fromEntries(
+          resources.map((resource) => [resource.type, resource.amount]),
+        ) as Record<ResourceType, number>),
+      };
+
+      return resourcesMap;
     }),
 });

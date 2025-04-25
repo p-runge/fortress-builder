@@ -7,6 +7,10 @@ import { ResourceType } from "~/server/db/client";
 import { BuildingMetric } from "~/server/models/building";
 import AddBuildingDialog from "./_components/add-building-dialog";
 
+// type AppRouterPage<T extends string> = (props: {
+//   searchParams: Promise<Partial<Record<T, string>>>;
+// }) => JSX.Element;
+
 export default async function Home({
   searchParams,
 }: {
@@ -37,24 +41,22 @@ export default async function Home({
                 <h2 className="text-xl font-semibold">{building.type}</h2>
                 <p className="text-gray-500">Level: {building.level}</p>
                 {/* costs */}
-                <div>
-                  <div className="flex gap-4 text-gray-500">
-                    {Object.values(ResourceType)
-                      .map((resource) => ({
-                        resource,
-                        amount:
-                          BuildingMetric[building.type].upgrades[
-                            building.level + 1
-                          ]?.costs[resource],
-                      }))
-                      .filter(({ amount }) => !!amount)
-                      .map(({ resource, amount }) => (
-                        <span key={resource}>
-                          {resource}:{" "}
-                          {new Intl.NumberFormat(locale).format(amount!)}
-                        </span>
-                      ))}
-                  </div>
+                <div className="flex gap-4 text-gray-500">
+                  {Object.values(ResourceType)
+                    .map((resource) => ({
+                      resource,
+                      amount:
+                        BuildingMetric[building.type].upgrades[
+                          building.level + 1
+                        ]?.costs[resource],
+                    }))
+                    .filter(({ amount }) => !!amount)
+                    .map(({ resource, amount }) => (
+                      <span key={resource}>
+                        {resource}:{" "}
+                        {new Intl.NumberFormat(locale).format(amount!)}
+                      </span>
+                    ))}
                 </div>
               </div>
               <UpgradeBuildingEvent building={building} />

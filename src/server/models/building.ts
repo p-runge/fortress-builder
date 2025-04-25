@@ -20,29 +20,29 @@ export const BuildingMetric: BuildingMetric = {
       2: {
         time: 5,
         costs: {
-          wood: 100,
-          stone: 50,
+          [ResourceType.wood]: 100,
+          [ResourceType.stone]: 50,
         },
       },
       3: {
         time: 10,
         costs: {
-          wood: 2000,
-          stone: 1000,
+          [ResourceType.wood]: 2000,
+          [ResourceType.stone]: 1000,
         },
       },
       4: {
         time: 30,
         costs: {
-          wood: 50000,
-          stone: 25000,
+          [ResourceType.wood]: 50000,
+          [ResourceType.stone]: 25000,
         },
       },
       5: {
         time: 45,
         costs: {
-          wood: 2000000,
-          stone: 1000000,
+          [ResourceType.wood]: 2000000,
+          [ResourceType.stone]: 1000000,
         },
       },
     },
@@ -53,36 +53,36 @@ export const BuildingMetric: BuildingMetric = {
       1: {
         time: 0,
         costs: {
-          wood: 10,
-          stone: 5,
+          [ResourceType.wood]: 10,
+          [ResourceType.stone]: 5,
         },
       },
       2: {
         time: 5,
         costs: {
-          wood: 100,
-          stone: 50,
+          [ResourceType.wood]: 100,
+          [ResourceType.stone]: 50,
         },
       },
       3: {
         time: 10,
         costs: {
-          wood: 2000,
-          stone: 1000,
+          [ResourceType.wood]: 2000,
+          [ResourceType.stone]: 1000,
         },
       },
       4: {
         time: 30,
         costs: {
-          wood: 50000,
-          stone: 25000,
+          [ResourceType.wood]: 50000,
+          [ResourceType.stone]: 25000,
         },
       },
       5: {
         time: 45,
         costs: {
-          wood: 2000000,
-          stone: 1000000,
+          [ResourceType.wood]: 2000000,
+          [ResourceType.stone]: 1000000,
         },
       },
     },
@@ -97,7 +97,7 @@ export type BuildingMetric = Record<
   }
 >;
 
-type BuildingUpgradeData = {
+export type BuildingUpgradeData = {
   time: number; // in seconds
   costs: Partial<Record<ResourceType, number>>;
 };

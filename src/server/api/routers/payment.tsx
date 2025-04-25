@@ -157,10 +157,10 @@ export const paymentRouter = router({
         });
       }
 
-      await db.userResources.update({
-        where: { userId },
+      await db.resource.update({
+        where: { userId_type: { userId, type: "gems" } },
         data: {
-          gems: {
+          amount: {
             increment: gemsToAdd,
           },
         },

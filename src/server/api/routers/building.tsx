@@ -87,9 +87,11 @@ export const buildingRouter = router({
             resources: true,
           },
         });
-        const userResources = user.resources!;
         for (const [resource, cost] of Object.entries(costs)) {
-          if (userResources[resource as ResourceType] < cost) {
+          if (
+            user.resources!.find((r) => r.type === resource)?.amount ??
+            0 < cost
+          ) {
             throw new TRPCError({
               code: "UNPROCESSABLE_CONTENT",
               message: `Not enough ${resource} to upgrade building.`,
@@ -104,20 +106,17 @@ export const buildingRouter = router({
           },
           data: {
             resources: {
-              update: {
-                [ResourceType.wood]: {
-                  decrement: costs[ResourceType.wood] ?? 0,
+              updateMany: Object.entries(costs).map(([resource, cost]) => ({
+                where: {
+                  userId: session.user.id,
+                  resource: resource as ResourceType, // type assertion
                 },
-                [ResourceType.stone]: {
-                  decrement: costs[ResourceType.stone] ?? 0,
+                data: {
+                  amount: {
+                    decrement: cost, // decrement the resource amount
+                  },
                 },
-                [ResourceType.food]: {
-                  decrement: costs[ResourceType.food] ?? 0,
-                },
-                [ResourceType.gold]: {
-                  decrement: costs[ResourceType.gold] ?? 0,
-                },
-              },
+              })),
             },
           },
         });

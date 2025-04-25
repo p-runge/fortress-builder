@@ -4,6 +4,7 @@ import { NextAuthConfig } from "next-auth";
 import Discord from "next-auth/providers/discord";
 import { env } from "~/env";
 import { db } from "../db";
+import { ResourceType } from "../db/client";
 
 const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(db as PrismaClient),
@@ -19,6 +20,20 @@ const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/signin",
+  },
+  events: {
+    async createUser({ user }) {
+      const userId = user.id;
+      if (!userId) return;
+
+      // Create default resources for the new user
+      await db.resource.createMany({
+        data: Object.values(ResourceType).map((type) => ({
+          type,
+          userId,
+        })),
+      });
+    },
   },
 };
 
