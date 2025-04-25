@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { faGem, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/api/client";
@@ -42,7 +42,22 @@ function getImageByItemType(itemType: ItemType) {
     src = "stone";
     alt = "stone";
   }
-  return <img src={`/resource-images/${src}.png`} alt={alt} />;
+  //hier soll für den Wert 1000 x1k und für 10000000 der Wert x1m gerendert werden und als Overlay über das Image
+  return (
+    <div className="relative mr-4 h-24 w-24">
+      <div className="absolute inset-0">
+        <Image
+          width={220}
+          height={220}
+          src={`/resource-images/${src}.png`}
+          alt={alt as string}
+        />
+      </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-center text-white">
+        <span className="font-bold">{item}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function ShopDialog() {
@@ -76,19 +91,16 @@ export default function ShopDialog() {
             ></FontAwesomeIcon>
           </div>
         </DialogHeader>
-
-        {/* Wrappendes Div */}
         <div className="grid grid-cols-2 gap-4 py-4">
           {isLoadingItems ? (
             <div className="flex items-center justify-center">
               <p className="text-gray-500">Loading...</p>
             </div>
           ) : items && items.length > 0 ? (
-            // Map Funktion
             items.map((item) => (
               <div
                 key={item.type}
-                className="cursor-pointer rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
+                className="flex items-center justify-between rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
                 onClick={async () => {
                   if (isLoadingBuy) return;
                   setIsLoadingBuy(true);
@@ -100,15 +112,17 @@ export default function ShopDialog() {
                 }}
               >
                 {getImageByItemType(item.type)}
-                <div className="flex items-center">
-                  <span>{item.type}</span>
-                </div>
+                <span>
+                  {new Intl.NumberFormat(locale).format(item.cost)}
+                </span>{" "}
                 <FontAwesomeIcon
                   icon={faGem}
                   size="lg"
-                  className="mt-2 cursor-pointer text-blue-400"
-                />{" "}
-                <span>{new Intl.NumberFormat(locale).format(item.cost)}</span>
+                  className="text-blue-300"
+                />
+                <button className="cursor-pointer rounded bg-green-600 px-4 py-2 text-orange-300">
+                  Buy
+                </button>
               </div>
             ))
           ) : (
