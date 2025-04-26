@@ -1,5 +1,4 @@
 import { api } from "~/api/server";
-import ScalingFrame from "~/components/scaling-frame";
 import UI from "~/components/ui";
 import UpgradeBuildingEvent from "~/components/upgrade-building-event";
 import { getLocale } from "~/i18n";
@@ -29,46 +28,43 @@ export default async function Home({
   }
 
   return (
-    <ScalingFrame>
-      <UI>
-        <main className="grid grid-cols-3 gap-4 px-4 pt-16">
-          {buildings.map((building) => (
-            <div
-              key={building.id}
-              className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm"
-            >
-              <div className="text-center">
-                <h2 className="text-xl font-semibold">{building.type}</h2>
-                <p className="text-gray-500">Level: {building.level}</p>
-                {/* costs */}
-                <div className="flex gap-4 text-gray-500">
-                  {Object.values(ResourceType)
-                    .map((resource) => ({
-                      resource,
-                      amount:
-                        BuildingMetric[building.type].upgrades[
-                          building.level + 1
-                        ]?.costs[resource],
-                    }))
-                    .filter(({ amount }) => !!amount)
-                    .map(({ resource, amount }) => (
-                      <span key={resource}>
-                        {resource}:{" "}
-                        {new Intl.NumberFormat(locale).format(amount!)}
-                      </span>
-                    ))}
-                </div>
+    <UI>
+      <main className="grid grid-cols-3 gap-4 px-4 pt-16">
+        {buildings.map((building) => (
+          <div
+            key={building.id}
+            className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm"
+          >
+            <div className="text-center">
+              <h2 className="text-xl font-semibold">{building.type}</h2>
+              <p className="text-gray-500">Level: {building.level}</p>
+              {/* costs */}
+              <div className="flex gap-4 text-gray-500">
+                {Object.values(ResourceType)
+                  .map((resource) => ({
+                    resource,
+                    amount:
+                      BuildingMetric[building.type].upgrades[building.level + 1]
+                        ?.costs[resource],
+                  }))
+                  .filter(({ amount }) => !!amount)
+                  .map(({ resource, amount }) => (
+                    <span key={resource}>
+                      {resource}:{" "}
+                      {new Intl.NumberFormat(locale).format(amount!)}
+                    </span>
+                  ))}
               </div>
-              <UpgradeBuildingEvent building={building} />
             </div>
-          ))}
-        </main>
+            <UpgradeBuildingEvent building={building} />
+          </div>
+        ))}
+      </main>
 
-        {/* add building button */}
-        <div className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm">
-          <AddBuildingDialog />
-        </div>
-      </UI>
-    </ScalingFrame>
+      {/* add building button */}
+      <div className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm">
+        <AddBuildingDialog />
+      </div>
+    </UI>
   );
 }

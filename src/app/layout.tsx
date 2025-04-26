@@ -11,6 +11,7 @@ import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Toaster } from "~/components/ui/sonner";
+import ScalingFrame from "~/components/scaling-frame";
 config.autoAddCss = false;
 
 const geistSans = Geist({
@@ -47,8 +48,10 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <TRPCProvider>
-              {children}
-              <Toaster />
+              <ScalingFrame>
+                {children}
+                <Toaster />
+              </ScalingFrame>
             </TRPCProvider>
           </SessionProvider>
         </ThemeProvider>

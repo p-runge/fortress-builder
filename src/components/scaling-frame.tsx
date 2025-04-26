@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
 
@@ -23,6 +24,9 @@ export default function ScalingFrame({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const active = !pathname.startsWith("/auth");
+
   const ref = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +50,10 @@ export default function ScalingFrame({
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
   }, []);
+
+  if (!active) {
+    return children;
+  }
 
   return (
     <ScalingFrameContext.Provider value={{ scale }}>
