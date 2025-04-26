@@ -3,9 +3,7 @@ import { stripe } from "~/server/payment";
 import { authedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { db } from "~/server/db";
-
-// TODO: Replace with your app's URL
-const APP_URL = "http://localhost:3000";
+import { env } from "~/env";
 
 const GemPackageSchema = z.object({
   id: z.string(),
@@ -83,8 +81,8 @@ export const paymentRouter = router({
           },
         ],
         mode: "payment",
-        success_url: `${APP_URL}/payment-successful/?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${APP_URL}/?payment-canceled=true`,
+        success_url: `${env.APP_URL}/payment-successful/?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${env.APP_URL}/?payment-canceled=true`,
         metadata: {
           userId,
           productId: input.id,

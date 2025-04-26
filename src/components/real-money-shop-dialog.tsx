@@ -66,12 +66,7 @@ export default function RealMoneyShopDialog({
                       if (url) {
                         window.location.href = url;
                       }
-                    } catch (error) {
-                      console.error("Error buying gem package:", error);
-                      alert(
-                        "An error occurred while processing your purchase.",
-                      );
-                    }
+                    } catch {}
                     setIsLoadingBuy(false);
                   }}
                 >
