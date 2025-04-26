@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { api } from "~/api/client";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -11,7 +13,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
-import { addBuilding } from "~/server/actions";
 import { BuildingType, ResourceType } from "~/server/db/client";
 import { BuildingMetric } from "~/server/models/building";
 
@@ -20,6 +21,9 @@ export default function NewBuildingDialog() {
   const [isLoading, setIsLoading] = useState(false);
 
   const locale = getLocale();
+  const router = useRouter();
+
+  const { mutateAsync: build } = api.building.build.useMutation();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -58,12 +62,11 @@ export default function NewBuildingDialog() {
                 onClick={async () => {
                   setIsLoading(true);
                   try {
-                    await addBuilding(type);
-                  } catch (error) {
-                    console.error("Error adding building:", error);
-                  }
+                    await build({ type });
+                    setIsOpen(false);
+                    router.refresh();
+                  } catch {}
                   setIsLoading(false);
-                  setIsOpen(false);
                 }}
               >
                 {isLoading ? "Building..." : type}
