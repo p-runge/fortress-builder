@@ -1,11 +1,15 @@
 import { TRPCError } from "@trpc/server";
 import { on } from "stream";
 import { z } from "zod";
-import { eventEmitter } from "~/server/jobs/event-emitter";
 import { db } from "~/server/db";
 import { ResourceType } from "~/server/db/client";
+import { eventEmitter } from "~/server/jobs/event-emitter";
 import { jobQueue } from "~/server/jobs/job-queue";
-import { BuildingMetric, BuildingSchema } from "~/server/models/building";
+import {
+  BuildingMetric,
+  BuildingSchema,
+  buildingTypeCollectableMap,
+} from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
@@ -51,6 +55,8 @@ export const buildingRouter = router({
         }
       }
 
+      const collectableResourceType = buildingTypeCollectableMap[input.type];
+
       const { id } = await db.building.create({
         select: {
           id: true,
@@ -58,6 +64,13 @@ export const buildingRouter = router({
         data: {
           type: input.type,
           userId: session.user.id,
+          collectableBuilding: collectableResourceType && {
+            create: {
+              generationRate:
+                BuildingMetric[input.type].upgrades[1]!.generation?.rate,
+              resourceType: collectableResourceType,
+            },
+          },
         },
       });
 

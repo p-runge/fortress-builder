@@ -278,3 +278,14 @@ export type BuildingGenerationData = {
   rate: number; // in resources per second
   duration: number; // in seconds
 };
+
+export const buildingTypeCollectableMap: Record<
+  BuildingType,
+  Exclude<ResourceType, "gems"> | undefined
+> = {
+  [BuildingType.townhall]: undefined,
+  [BuildingType.storage]: undefined,
+  [BuildingType.farm]: ResourceType.food,
+  [BuildingType.sawmill]: ResourceType.wood,
+  [BuildingType.mine]: ResourceType.stone,
+};
