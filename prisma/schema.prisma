@@ -97,7 +97,8 @@ model CollectableBuilding {
   buildingId String   @unique
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
-  generationRate Int @default(0) // Resources generated per second
+  resourceType   ResourceType
+  generationRate Int          @default(0) // Resources generated per second
 }
 
 enum ResourceType {
