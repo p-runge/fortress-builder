@@ -71,10 +71,9 @@ model VerificationToken {
 enum BuildingType {
   townhall
   storage
-  // farm
-  // sawmill
-  // mine
-  // barracks
+  farm
+  sawmill
+  mine
 }
 
 model Building {
