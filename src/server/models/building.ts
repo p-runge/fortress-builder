@@ -318,12 +318,37 @@ export function calculateCollectableAmount(
   const diffInSeconds = Math.floor(
     (now.getTime() - lastCollectedDate.getTime()) / 1000,
   );
+  const generationDuration =
+    BuildingMetric[building.type].upgrades[building.level]!.generation
+      ?.duration ?? 0;
+  const durationValidlyCollected = Math.min(diffInSeconds, generationDuration);
 
   const generationRate =
     BuildingMetric[building.type].upgrades[building.level]!.generation?.rate ??
     0;
 
-  const amount = diffInSeconds * generationRate;
+  const amount = durationValidlyCollected * generationRate;
 
   return amount;
+}
+
+export function isCollectableAmountFull(
+  building: BuildingWithCollectableBuilding,
+) {
+  if (!building.collectableBuilding) {
+    return false;
+  }
+
+  const now = new Date();
+  const lastCollectedDate = new Date(
+    building.collectableBuilding.lastCollected,
+  );
+  const diffInSeconds = Math.floor(
+    (now.getTime() - lastCollectedDate.getTime()) / 1000,
+  );
+  const generationDuration =
+    BuildingMetric[building.type].upgrades[building.level]!.generation
+      ?.duration ?? 0;
+
+  return diffInSeconds >= generationDuration;
 }

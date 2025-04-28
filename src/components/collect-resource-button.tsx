@@ -7,6 +7,7 @@ import { getLocale } from "~/i18n";
 import {
   BuildingWithCollectableBuilding,
   calculateCollectableAmount,
+  isCollectableAmountFull,
 } from "~/server/models/building";
 import { Button } from "./ui/button";
 
@@ -19,6 +20,7 @@ export default function CollectResourceButton({
   const { mutateAsync: collect } = api.building.collect.useMutation();
 
   const [collectableAmount, setCollectableAmount] = useState(0);
+  const isFull = isCollectableAmountFull(building);
 
   const router = useRouter();
   const locale = getLocale();
@@ -56,6 +58,7 @@ export default function CollectResourceButton({
         setCollectableAmount(0);
         router.refresh();
       }}
+      variant={isFull ? "destructive" : "default"}
     >
       {`Collect ${new Intl.NumberFormat(locale).format(collectableAmount)} ${collectableBuilding.resourceType}`}
     </Button>
