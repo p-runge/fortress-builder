@@ -1,66 +1,55 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BuildingWithCollectableBuilding } from "~/server/models/building";
+import { api } from "~/api/client";
+import { CollectableBuilding } from "~/server/db/client";
+import { calculateCollectableAmount } from "~/server/models/building";
 import { Button } from "./ui/button";
+import { getLocale } from "~/i18n";
 
 export default function CollectResourceButton({
-  building,
+  collectableBuilding,
 }: {
-  building: BuildingWithCollectableBuilding;
+  collectableBuilding: Omit<CollectableBuilding, "buildingId">;
 }) {
-  // const { mutateAsync: collectResource } = api.building.collect.useMutation();
-
-  const handleCollectResource = async () => {
-    console.log("Collecting resource...");
-
-    // await collectResource({
-    //   id: building.id,
-    // });
-  };
+  const [isCollecting, setIsCollecting] = useState(false);
+  const { mutateAsync: collect } = api.building.collect.useMutation();
 
   const [collectableAmount, setCollectableAmount] = useState(0);
 
+  const router = useRouter();
+  const locale = getLocale();
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!building.collectableBuilding) {
+      if (!collectableBuilding) {
         return;
       }
 
-      const amount = calculateCollectableAmount(building);
+      const amount = calculateCollectableAmount(collectableBuilding);
       setCollectableAmount(amount);
     }, 1000);
     return () => {
       clearInterval(interval);
     };
-  }, [building]);
+  }, [collectableBuilding]);
 
-  if (!building.collectableBuilding) {
-    console.error("Building is not collectable", building);
-    return null;
-  }
-
-  return collectableAmount === 0 ? null : (
-    <Button onClick={handleCollectResource}>
-      {`Collect ${collectableAmount} ${building.collectableBuilding.resourceType}`}
+  return collectableAmount === 0 || isCollecting ? null : (
+    <Button
+      onClick={async () => {
+        setIsCollecting(true);
+        try {
+          await collect({
+            id: collectableBuilding.id,
+          });
+        } catch {}
+        setIsCollecting(false);
+        setCollectableAmount(0);
+        router.refresh();
+      }}
+    >
+      {`Collect ${new Intl.NumberFormat(locale).format(collectableAmount)} ${collectableBuilding.resourceType}`}
     </Button>
   );
-}
-
-function calculateCollectableAmount(building: BuildingWithCollectableBuilding) {
-  if (!building.collectableBuilding) {
-    return 0;
-  }
-
-  const { lastCollected, generationRate } = building.collectableBuilding;
-
-  const now = new Date();
-  const lastCollectedDate = new Date(lastCollected);
-  const diffInSeconds = Math.floor(
-    (now.getTime() - lastCollectedDate.getTime()) / 1000,
-  );
-
-  const amount = Math.floor(diffInSeconds / generationRate);
-
-  return amount;
 }

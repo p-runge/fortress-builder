@@ -120,7 +120,7 @@ export const BuildingMetric: BuildingMetric = {
           [ResourceType.stone]: 50,
         },
         generation: {
-          rate: 50,
+          rate: 5,
           duration: 600,
         },
       },
@@ -177,7 +177,7 @@ export const BuildingMetric: BuildingMetric = {
           [ResourceType.stone]: 50,
         },
         generation: {
-          rate: 50,
+          rate: 5,
           duration: 600,
         },
       },
@@ -234,7 +234,7 @@ export const BuildingMetric: BuildingMetric = {
           [ResourceType.stone]: 50,
         },
         generation: {
-          rate: 50,
+          rate: 5,
           duration: 600,
         },
       },
@@ -304,3 +304,23 @@ export const buildingTypeCollectableMap: Record<
   [BuildingType.sawmill]: ResourceType.wood,
   [BuildingType.mine]: ResourceType.stone,
 };
+
+export function calculateCollectableAmount(
+  collectableBuilding: Omit<CollectableBuilding, "buildingId">,
+) {
+  if (!collectableBuilding) {
+    return 0;
+  }
+
+  const { lastCollected, generationRate } = collectableBuilding;
+
+  const now = new Date();
+  const lastCollectedDate = new Date(lastCollected);
+  const diffInSeconds = Math.floor(
+    (now.getTime() - lastCollectedDate.getTime()) / 1000,
+  );
+
+  const amount = diffInSeconds * generationRate;
+
+  return amount;
+}

@@ -9,6 +9,7 @@ import {
   BuildingMetric,
   BuildingSchema,
   buildingTypeCollectableMap,
+  calculateCollectableAmount,
   CollectableBuildingSchema,
 } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
@@ -234,5 +235,51 @@ export const buildingRouter = router({
           break;
         }
       }
+    }),
+
+  collect: authedProcedure
+    .input(z.object({ id: z.string() }))
+    .output(z.void())
+    .mutation(async ({ input, ctx: { session } }) => {
+      const building = await db.collectableBuilding.findUniqueOrThrow({
+        where: {
+          id: input.id,
+        },
+        include: {
+          building: true,
+        },
+      });
+
+      if (building.building.userId !== session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to collect this building.",
+        });
+      }
+
+      const amount = calculateCollectableAmount(building);
+
+      await db.collectableBuilding.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          lastCollected: new Date(),
+        },
+      });
+
+      await db.resource.update({
+        where: {
+          userId_type: {
+            userId: session.user.id,
+            type: building.resourceType,
+          },
+        },
+        data: {
+          amount: {
+            increment: amount,
+          },
+        },
+      });
     }),
 });
