@@ -2,7 +2,6 @@
 
 import { faGem, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/api/client";
@@ -14,64 +13,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
-import { ItemType } from "~/server/db/client";
 import { Button } from "./ui/button";
-
-function getImageByItemType(itemType: ItemType) {
-  let src;
-  let alt;
-  let amount;
-
-  if (itemType === "food_boost_1000") {
-    src = "food";
-    alt = "food";
-    amount = "x1k";
-  } else if (itemType === "food_boost_1000000") {
-    src = "food";
-    alt = "food";
-    amount = "x1m";
-  } else if (itemType === "wood_boost_1000") {
-    src = "wood";
-    alt = "wood";
-    amount = "x1k";
-  } else if (itemType === "wood_boost_1000000") {
-    src = "wood";
-    alt = "wood";
-    amount = "x1m";
-  } else if (itemType === "gold_boost_1000") {
-    src = "gold";
-    alt = "gold";
-    amount = "x1k";
-  } else if (itemType === "gold_boost_1000000") {
-    src = "gold";
-    alt = "gold";
-    amount = "x1m";
-  } else if (itemType === "stone_boost_1000") {
-    src = "stone";
-    alt = "stone";
-    amount = "x1k";
-  } else if (itemType === "stone_boost_1000000") {
-    src = "stone";
-    alt = "stone";
-    amount = "x1m";
-  }
-
-  return (
-    <div className="relative mr-4 h-24 w-24">
-      <div className="absolute inset-0">
-        <Image
-          width={220}
-          height={220}
-          src={`/resource-images/${src}.png`}
-          alt={alt!}
-        />
-      </div>
-      <div className="absolute inset-0 flex flex-col items-end justify-end p-1 text-center text-white">
-        <span className="font-bold">{amount}</span>
-      </div>
-    </div>
-  );
-}
+import ItemImage from "~/app/_components/item-image";
 
 export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -121,17 +64,8 @@ export default function ShopDialog() {
                 <div
                   key={item.type}
                   className="flex items-center justify-between rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
-                  onClick={async () => {
-                    if (isLoadingBuy) return;
-                    setIsLoadingBuy(true);
-                    try {
-                      await buyItem({ type: item.type, amount: 1 });
-                      router.refresh();
-                    } catch {}
-                    setIsLoadingBuy(false);
-                  }}
                 >
-                  {getImageByItemType(item.type)}
+                  <ItemImage itemType={item.type} />
                   <div className="grow">
                     <FontAwesomeIcon
                       icon={faGem}
@@ -142,7 +76,18 @@ export default function ShopDialog() {
                       {new Intl.NumberFormat(locale).format(item.cost)}
                     </span>
                   </div>
-                  <Button className="bg-green-600 font-bold text-white">
+                  <Button
+                    onClick={async () => {
+                      if (isLoadingBuy) return;
+                      setIsLoadingBuy(true);
+                      try {
+                        await buyItem({ type: item.type, amount: 1 });
+                        router.refresh();
+                      } catch {}
+                      setIsLoadingBuy(false);
+                    }}
+                    className="bg-green-600 font-bold text-white"
+                  >
                     Buy
                   </Button>
                 </div>
