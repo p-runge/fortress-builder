@@ -62,7 +62,7 @@ export default function NewBuildingDialog() {
                 onClick={async () => {
                   setIsLoading(true);
                   try {
-                    await build({ type });
+                    await build({ type, x: 0, y: 0 });
                     setIsOpen(false);
                     router.refresh();
                   } catch {}
