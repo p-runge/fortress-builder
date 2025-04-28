@@ -13,7 +13,6 @@ export const CollectableBuildingSchema = z.object({
   id: z.string(),
   lastCollected: z.date(),
   resourceType: z.nativeEnum(ResourceType),
-  generationRate: z.number().int().positive(),
 });
 export type CollectableBuilding = z.infer<typeof CollectableBuildingSchema>;
 
@@ -306,19 +305,23 @@ export const buildingTypeCollectableMap: Record<
 };
 
 export function calculateCollectableAmount(
-  collectableBuilding: Omit<CollectableBuilding, "buildingId">,
+  building: BuildingWithCollectableBuilding,
 ) {
-  if (!collectableBuilding) {
+  if (!building.collectableBuilding) {
     return 0;
   }
 
-  const { lastCollected, generationRate } = collectableBuilding;
-
   const now = new Date();
-  const lastCollectedDate = new Date(lastCollected);
+  const lastCollectedDate = new Date(
+    building.collectableBuilding.lastCollected,
+  );
   const diffInSeconds = Math.floor(
     (now.getTime() - lastCollectedDate.getTime()) / 1000,
   );
+
+  const generationRate =
+    BuildingMetric[building.type].upgrades[building.level]!.generation?.rate ??
+    0;
 
   const amount = diffInSeconds * generationRate;
 

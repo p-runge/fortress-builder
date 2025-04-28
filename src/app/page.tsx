@@ -61,9 +61,7 @@ export default async function Home({
 
             {building.collectableBuilding && (
               <div className="absolute top-0 right-0 p-4">
-                <CollectResourceButton
-                  collectableBuilding={building.collectableBuilding}
-                />
+                <CollectResourceButton building={building} />
               </div>
             )}
           </div>

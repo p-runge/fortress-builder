@@ -3,15 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "~/api/client";
-import { CollectableBuilding } from "~/server/db/client";
-import { calculateCollectableAmount } from "~/server/models/building";
-import { Button } from "./ui/button";
 import { getLocale } from "~/i18n";
+import {
+  BuildingWithCollectableBuilding,
+  calculateCollectableAmount,
+} from "~/server/models/building";
+import { Button } from "./ui/button";
 
 export default function CollectResourceButton({
-  collectableBuilding,
+  building,
 }: {
-  collectableBuilding: Omit<CollectableBuilding, "buildingId">;
+  building: BuildingWithCollectableBuilding;
 }) {
   const [isCollecting, setIsCollecting] = useState(false);
   const { mutateAsync: collect } = api.building.collect.useMutation();
@@ -23,17 +25,23 @@ export default function CollectResourceButton({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!collectableBuilding) {
+      if (!building) {
         return;
       }
 
-      const amount = calculateCollectableAmount(collectableBuilding);
+      const amount = calculateCollectableAmount(building);
       setCollectableAmount(amount);
     }, 1000);
     return () => {
       clearInterval(interval);
     };
-  }, [collectableBuilding]);
+  }, [building]);
+
+  const { collectableBuilding } = building;
+
+  if (!collectableBuilding) {
+    return null;
+  }
 
   return collectableAmount === 0 || isCollecting ? null : (
     <Button

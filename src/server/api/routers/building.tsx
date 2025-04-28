@@ -33,7 +33,6 @@ export const buildingRouter = router({
             select: {
               id: true,
               lastCollected: true,
-              generationRate: true,
               resourceType: true,
             },
           },
@@ -84,8 +83,6 @@ export const buildingRouter = router({
           userId: session.user.id,
           collectableBuilding: collectableResourceType && {
             create: {
-              generationRate:
-                BuildingMetric[input.type].upgrades[1]!.generation?.rate,
               resourceType: collectableResourceType,
             },
           },
@@ -241,23 +238,27 @@ export const buildingRouter = router({
     .input(z.object({ id: z.string() }))
     .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {
-      const building = await db.collectableBuilding.findUniqueOrThrow({
-        where: {
-          id: input.id,
-        },
-        include: {
-          building: true,
-        },
-      });
+      const collectableBuilding =
+        await db.collectableBuilding.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+          include: {
+            building: true,
+          },
+        });
 
-      if (building.building.userId !== session.user.id) {
+      if (collectableBuilding.building.userId !== session.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You do not have permission to collect this building.",
         });
       }
 
-      const amount = calculateCollectableAmount(building);
+      const amount = calculateCollectableAmount({
+        ...collectableBuilding.building,
+        collectableBuilding,
+      });
 
       await db.collectableBuilding.update({
         where: {
@@ -272,7 +273,7 @@ export const buildingRouter = router({
         where: {
           userId_type: {
             userId: session.user.id,
-            type: building.resourceType,
+            type: collectableBuilding.resourceType,
           },
         },
         data: {
