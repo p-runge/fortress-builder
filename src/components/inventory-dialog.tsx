@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
 import { Button } from "./ui/button";
-import ItemImage from "~/app/_components/item-image";
+import ItemImage from "~/components/item-image";
 
 export default function InventoryDialog() {
   const [isOpen, setIsOpen] = useState(false);
