@@ -96,10 +96,10 @@ model FortressSlot {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  buildingId String   @unique
-  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  buildingId String?   @unique
+  building   Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
   fortressId String
-  fortress   Fortress @relation(fields: [fortressId], references: [id], onDelete: Cascade)
+  fortress   Fortress  @relation(fields: [fortressId], references: [id], onDelete: Cascade)
 
   @@unique([fortressId, x, y]) // Ensure no duplicate slots in the same position
 }

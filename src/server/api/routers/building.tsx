@@ -26,7 +26,11 @@ export const buildingRouter = router({
     .query(async ({ ctx: { session } }) => {
       return await db.building.findMany({
         where: {
-          userId: session.user.id,
+          fortressSlot: {
+            fortress: {
+              userId: session.user.id,
+            },
+          },
         },
         include: {
           collectableBuilding: {
@@ -49,9 +53,42 @@ export const buildingRouter = router({
     }),
 
   build: authedProcedure
-    .input(z.object({ type: BuildingSchema.shape.type }))
+    .input(
+      z.object({
+        type: BuildingSchema.shape.type,
+        x: z.number(),
+        y: z.number(),
+      }),
+    )
     .output(z.string())
     .mutation(async ({ input, ctx: { session } }) => {
+      // check if fortress slot is available
+      const fortressSlot = await db.fortressSlot.findFirst({
+        where: {
+          fortress: {
+            userId: session.user.id,
+          },
+          x: input.x,
+          y: input.y,
+        },
+        include: {
+          building: true,
+        },
+      });
+      if (!fortressSlot) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Fortress slot not found.",
+        });
+      }
+      if (fortressSlot?.building) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Fortress slot is already occupied.",
+        });
+      }
+
+      // check if user has enough resources to build building
       const resources = await db.resource.findMany({
         where: {
           userId: session.user.id,
@@ -80,7 +117,11 @@ export const buildingRouter = router({
         },
         data: {
           type: input.type,
-          userId: session.user.id,
+          fortressSlot: {
+            connect: {
+              id: fortressSlot.id,
+            },
+          },
           collectableBuilding: collectableResourceType && {
             create: {
               resourceType: collectableResourceType,
@@ -99,15 +140,13 @@ export const buildingRouter = router({
       const building = await db.building.findUniqueOrThrow({
         where: {
           id: input.id,
+          fortressSlot: {
+            fortress: {
+              userId: session.user.id,
+            },
+          },
         },
       });
-
-      if (building.userId !== session.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to upgrade this building.",
-        });
-      }
 
       if (building.upgradeStart) {
         throw new TRPCError({
@@ -173,7 +212,11 @@ export const buildingRouter = router({
       await db.building.update({
         where: {
           id: input.id,
-          userId: session.user.id,
+          fortressSlot: {
+            fortress: {
+              userId: session.user.id,
+            },
+          },
         },
         data: {
           upgradeStart: new Date(),
@@ -194,17 +237,16 @@ export const buildingRouter = router({
     .input(z.object({ id: z.string() }))
     .subscription(async function* ({ input, signal, ctx: { session } }) {
       console.log("Subscribing to upgrading of building with ID:", input.id);
-      const building = await db.building.findUniqueOrThrow({
+      await db.building.findUniqueOrThrow({
         where: {
           id: input.id,
+          fortressSlot: {
+            fortress: {
+              userId: session.user.id,
+            },
+          },
         },
       });
-      if (building.userId !== session.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to subscribe to this building.",
-        });
-      }
 
       while (true) {
         console.log("Waiting for building upgrade event...");
@@ -242,18 +284,18 @@ export const buildingRouter = router({
         await db.collectableBuilding.findUniqueOrThrow({
           where: {
             id: input.id,
+            building: {
+              fortressSlot: {
+                fortress: {
+                  userId: session.user.id,
+                },
+              },
+            },
           },
           include: {
             building: true,
           },
         });
-
-      if (collectableBuilding.building.userId !== session.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to collect this building.",
-        });
-      }
 
       const amount = calculateCollectableAmount({
         ...collectableBuilding.building,
