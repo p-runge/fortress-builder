@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
 import { ItemType } from "~/server/db/client";
+import { Button } from "./ui/button";
 
 function getImageByItemType(itemType: ItemType) {
   let src;
@@ -62,7 +63,7 @@ function getImageByItemType(itemType: ItemType) {
           width={220}
           height={220}
           src={`/resource-images/${src}.png`}
-          alt={alt as string}
+          alt={alt!}
         />
       </div>
       <div className="absolute inset-0 flex flex-col items-end justify-end p-1 text-center text-white">
@@ -85,10 +86,6 @@ export default function ShopDialog() {
   const router = useRouter();
   const locale = getLocale();
 
-  if (resources === undefined) {
-    return null;
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -98,64 +95,66 @@ export default function ShopDialog() {
           className="m-2 cursor-pointer transition-transform hover:scale-110"
         />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px]">
-        <DialogHeader>
-          <div className="flex justify-around">
-            <DialogTitle>Item Shop</DialogTitle>
-            <div>
-              <FontAwesomeIcon
-                icon={faGem}
-                className="cursor-pointer text-blue-400"
-              ></FontAwesomeIcon>
-              <span className="ml-1">
-                {new Intl.NumberFormat(locale).format(resources.gems)}
-              </span>
-            </div>
-          </div>
-        </DialogHeader>
-        <div className="grid grid-cols-2 gap-4 py-4">
-          {isLoadingItems ? (
-            <div className="flex items-center justify-center">
-              <p className="text-gray-500">Loading...</p>
-            </div>
-          ) : items && items.length > 0 ? (
-            items.map((item) => (
-              <div
-                key={item.type}
-                className="flex items-center justify-between rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
-                onClick={async () => {
-                  if (isLoadingBuy) return;
-                  setIsLoadingBuy(true);
-                  try {
-                    await buyItem({ type: item.type, amount: 1 });
-                    router.refresh();
-                  } catch {}
-                  setIsLoadingBuy(false);
-                }}
-              >
-                {getImageByItemType(item.type)}
-                <div className="grow">
-                  <FontAwesomeIcon
-                    icon={faGem}
-                    size="lg"
-                    className="text-blue-400"
-                  />
-                  <span className="ml-1">
-                    {new Intl.NumberFormat(locale).format(item.cost)}
-                  </span>
-                </div>
-                <button className="cursor-pointer rounded bg-green-600 px-4 py-2 font-bold text-white">
-                  Buy
-                </button>
+      {resources && (
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <DialogTitle className="flex justify-around">
+              Item Shop
+              <div>
+                <FontAwesomeIcon
+                  icon={faGem}
+                  className="cursor-pointer text-blue-400"
+                ></FontAwesomeIcon>
+                <span className="ml-1">
+                  {new Intl.NumberFormat(locale).format(resources.gems)}
+                </span>
               </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center">
-              <p className="text-gray-500">No items available</p>
-            </div>
-          )}
-        </div>
-      </DialogContent>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            {isLoadingItems ? (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-500">Loading...</p>
+              </div>
+            ) : items && items.length > 0 ? (
+              items.map((item) => (
+                <div
+                  key={item.type}
+                  className="flex items-center justify-between rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
+                  onClick={async () => {
+                    if (isLoadingBuy) return;
+                    setIsLoadingBuy(true);
+                    try {
+                      await buyItem({ type: item.type, amount: 1 });
+                      router.refresh();
+                    } catch {}
+                    setIsLoadingBuy(false);
+                  }}
+                >
+                  {getImageByItemType(item.type)}
+                  <div className="grow">
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      size="lg"
+                      className="text-blue-400"
+                    />
+                    <span className="ml-1">
+                      {new Intl.NumberFormat(locale).format(item.cost)}
+                    </span>
+                  </div>
+                  <Button className="bg-green-600 font-bold text-white">
+                    Buy
+                  </Button>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-500">No items available</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }
