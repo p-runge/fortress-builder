@@ -9,6 +9,21 @@ export const BuildingSchema = z.object({
 });
 export type Building = z.infer<typeof BuildingSchema>;
 
+export const CollectableBuildingSchema = z.object({
+  id: z.string(),
+  lastCollected: z.date(),
+  resourceType: z.nativeEnum(ResourceType),
+  generationRate: z.number().int().positive(),
+});
+export type CollectableBuilding = z.infer<typeof CollectableBuildingSchema>;
+
+export const BuildingWithCollectableBuildingSchema = BuildingSchema.extend({
+  collectableBuilding: CollectableBuildingSchema.nullable(),
+});
+export type BuildingWithCollectableBuilding = z.infer<
+  typeof BuildingWithCollectableBuildingSchema
+>;
+
 export const BuildingMetric: BuildingMetric = {
   [BuildingType.townhall]: {
     limit: 1,

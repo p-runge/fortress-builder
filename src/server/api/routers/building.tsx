@@ -9,16 +9,33 @@ import {
   BuildingMetric,
   BuildingSchema,
   buildingTypeCollectableMap,
+  CollectableBuildingSchema,
 } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
   getAll: authedProcedure
-    .output(z.array(BuildingSchema))
+    .output(
+      z.array(
+        BuildingSchema.extend({
+          collectableBuilding: CollectableBuildingSchema.nullable(),
+        }),
+      ),
+    )
     .query(async ({ ctx: { session } }) => {
       return await db.building.findMany({
         where: {
           userId: session.user.id,
+        },
+        include: {
+          collectableBuilding: {
+            select: {
+              id: true,
+              lastCollected: true,
+              generationRate: true,
+              resourceType: true,
+            },
+          },
         },
         orderBy: [
           {

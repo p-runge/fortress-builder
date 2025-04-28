@@ -91,14 +91,13 @@ model Building {
 }
 
 model CollectableBuilding {
-  id            String   @id @default(cuid())
-  lastCollected DateTime @default(now())
+  id             String       @id @default(cuid())
+  lastCollected  DateTime     @default(now())
+  resourceType   ResourceType
+  generationRate Int          @default(0) // Resources generated per second
 
   buildingId String   @unique
   building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-
-  resourceType   ResourceType
-  generationRate Int          @default(0) // Resources generated per second
 }
 
 enum ResourceType {

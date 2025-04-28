@@ -1,4 +1,5 @@
 import { api } from "~/api/server";
+import CollectResourceButton from "~/components/collect-resource-button";
 import UI from "~/components/ui";
 import UpgradeBuildingEvent from "~/components/upgrade-building-event";
 import { getLocale } from "~/i18n";
@@ -33,7 +34,7 @@ export default async function Home({
         {buildings.map((building) => (
           <div
             key={building.id}
-            className="border-border flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm"
+            className="border-border relative flex flex-col items-center justify-center gap-4 rounded border p-4 shadow-sm"
           >
             <div className="text-center">
               <h2 className="text-xl font-semibold">{building.type}</h2>
@@ -57,6 +58,12 @@ export default async function Home({
               </div>
             </div>
             <UpgradeBuildingEvent building={building} />
+
+            {building.collectableBuilding && (
+              <div className="absolute top-0 right-0 p-4">
+                <CollectResourceButton building={building} />
+              </div>
+            )}
           </div>
         ))}
       </main>
