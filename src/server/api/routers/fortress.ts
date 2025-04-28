@@ -1,0 +1,54 @@
+import { z } from "zod";
+import { db } from "~/server/db";
+import { BuildingWithCollectableBuildingSchema } from "~/server/models/building";
+import { authedProcedure, router } from "../trpc";
+
+const FortressSlotSchema = z.object({
+  id: z.string(),
+  x: z.number(),
+  y: z.number(),
+  building: BuildingWithCollectableBuildingSchema.nullable(),
+});
+export type FortressSlot = z.infer<typeof FortressSlotSchema>;
+
+export const fortressRouter = router({
+  getAllSlots: authedProcedure
+    .output(z.array(FortressSlotSchema))
+    .query(async ({ ctx: { session } }) => {
+      return await db.fortressSlot.findMany({
+        where: {
+          fortress: {
+            userId: session.user.id,
+          },
+        },
+        select: {
+          id: true,
+          x: true,
+          y: true,
+          building: {
+            select: {
+              id: true,
+              type: true,
+              level: true,
+              upgradeStart: true,
+              collectableBuilding: {
+                select: {
+                  id: true,
+                  lastCollected: true,
+                  resourceType: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: [
+          {
+            createdAt: "asc",
+          },
+          {
+            id: "asc",
+          },
+        ],
+      });
+    }),
+});
