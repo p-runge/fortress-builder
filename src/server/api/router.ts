@@ -1,4 +1,5 @@
 import { buildingRouter } from "./routers/building";
+import { fortressRouter } from "./routers/fortress";
 import { itemRouter } from "./routers/item";
 import { paymentRouter } from "./routers/payment";
 import { resourceRouter } from "./routers/resource";
@@ -7,6 +8,7 @@ import { publicProcedure, router } from "./trpc";
 export const appRouter = router({
   ping: publicProcedure.query(() => "pong"),
   building: buildingRouter,
+  fortress: fortressRouter,
   item: itemRouter,
   payment: paymentRouter,
   resource: resourceRouter,

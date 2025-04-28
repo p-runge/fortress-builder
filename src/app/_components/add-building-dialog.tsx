@@ -16,7 +16,11 @@ import { getLocale } from "~/i18n";
 import { BuildingType, ResourceType } from "~/server/db/client";
 import { BuildingMetric } from "~/server/models/building";
 
-export default function NewBuildingDialog() {
+type Props = {
+  x: number;
+  y: number;
+};
+export default function NewBuildingDialog({ x, y }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,7 +66,7 @@ export default function NewBuildingDialog() {
                 onClick={async () => {
                   setIsLoading(true);
                   try {
-                    await build({ type, x: 0, y: 0 });
+                    await build({ type, x, y });
                     setIsOpen(false);
                     router.refresh();
                   } catch {}

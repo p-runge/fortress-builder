@@ -10,48 +10,10 @@ import {
   BuildingSchema,
   buildingTypeCollectableMap,
   calculateCollectableAmount,
-  CollectableBuildingSchema,
 } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
 export const buildingRouter = router({
-  getAll: authedProcedure
-    .output(
-      z.array(
-        BuildingSchema.extend({
-          collectableBuilding: CollectableBuildingSchema.nullable(),
-        }),
-      ),
-    )
-    .query(async ({ ctx: { session } }) => {
-      return await db.building.findMany({
-        where: {
-          fortressSlot: {
-            fortress: {
-              userId: session.user.id,
-            },
-          },
-        },
-        include: {
-          collectableBuilding: {
-            select: {
-              id: true,
-              lastCollected: true,
-              resourceType: true,
-            },
-          },
-        },
-        orderBy: [
-          {
-            createdAt: "asc",
-          },
-          {
-            id: "asc",
-          },
-        ],
-      });
-    }),
-
   build: authedProcedure
     .input(
       z.object({
