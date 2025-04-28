@@ -22,7 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  buildings Building[]
+  fortress  Fortress?
   resources Resource[]
   items     UserItems[]
 }
@@ -76,6 +76,34 @@ enum BuildingType {
   mine
 }
 
+model Fortress {
+  id String @id @default(cuid())
+  // name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  slots  FortressSlot[]
+  userId String         @unique
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FortressSlot {
+  id String @id @default(cuid())
+  x  Int
+  y  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  buildingId String   @unique
+  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  fortressId String
+  fortress   Fortress @relation(fields: [fortressId], references: [id], onDelete: Cascade)
+
+  @@unique([fortressId, x, y]) // Ensure no duplicate slots in the same position
+}
+
 model Building {
   id           String       @id @default(cuid())
   type         BuildingType
@@ -85,9 +113,8 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   collectableBuilding CollectableBuilding?
+  fortressSlot        FortressSlot?
 }
 
 model CollectableBuilding {
