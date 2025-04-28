@@ -16,6 +16,7 @@ import { ResourceType } from "~/server/db/client";
 import InventoryDialog from "./inventory-dialog";
 import RealMoneyShopDialog from "./real-money-shop-dialog";
 import ShopDialog from "./shop-dialog";
+import Chat from "./chat";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -85,9 +86,14 @@ export default async function UI({ children }: { children: React.ReactNode }) {
         <div className="pointer-events-auto col-start-3 p-2"></div>
 
         {/* bottom menu */}
-        <div className="pointer-events-auto col-span-3 flex justify-end">
-          <InventoryDialog />
-          <ShopDialog />
+        <div className="pointer-events-auto col-span-3 flex justify-between">
+          <div>
+            <Chat />
+          </div>
+          <div>
+            <InventoryDialog />
+            <ShopDialog />
+          </div>
         </div>
       </div>
     </div>
