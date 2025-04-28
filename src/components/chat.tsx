@@ -7,9 +7,18 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "~/components/ui/sheet";
+} from "./ui/sheet";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export default function Chat() {
+  const messages = [
+    "Test Message 1",
+    "Test Answer 1",
+    "Test Message 2",
+    "Test Answer 2",
+  ];
+
   return (
     <Sheet>
       <SheetTrigger>
@@ -21,12 +30,25 @@ export default function Chat() {
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          <SheetTitle>Chat</SheetTitle>
           <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This is a global chat for Fortress Builder. Stay connected with your
+            friends and other people!
           </SheetDescription>
         </SheetHeader>
+        <div className="flex h-full flex-col gap-2">
+          <div className="grow">
+            {messages.map((message) => {
+              return (
+                <div key={message}>
+                  <span>{message}</span>
+                </div>
+              );
+            })}
+          </div>
+          <Input />
+          <Button>Send</Button>
+        </div>
       </SheetContent>
     </Sheet>
   );
