@@ -1,4 +1,5 @@
-const HEX_SIZE = 1; // size of hexagon
+const HEX_SIZE = 1;
+
 // transform coordinates of hexagonal map to canvas coordinates
 export function getCanvasPosition(
   q: number,
