@@ -1,17 +1,16 @@
+import "@total-typescript/ts-reset";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TRPCProvider } from "~/api/client";
 import ThemeProvider from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
-import "@total-typescript/ts-reset";
 import "./globals.css";
 
 // set up fontawesome icons and fix icon sizes
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Toaster } from "~/components/ui/sonner";
-import ScalingFrame from "~/components/scaling-frame";
 config.autoAddCss = false;
 
 const geistSans = Geist({
@@ -48,10 +47,8 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <TRPCProvider>
-              <ScalingFrame>
-                {children}
-                <Toaster />
-              </ScalingFrame>
+              {children}
+              <Toaster />
             </TRPCProvider>
           </SessionProvider>
         </ThemeProvider>
