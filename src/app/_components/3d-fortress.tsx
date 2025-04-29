@@ -4,22 +4,15 @@ import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { Mesh } from "three";
-import { FORTRESS_SIZE, getCoordinatesForSize } from "~/server/models/fortress";
+import { api } from "~/api/client";
 import { getCanvasPosition } from "~/utils/3d";
 
 export default function Fortress() {
-  // const { data: slots, isLoading } = api.fortress.getAllSlots.useQuery();
+  const { data: slots, isLoading } = api.fortress.getAllSlots.useQuery();
 
-  const coordinates = getCoordinatesForSize(FORTRESS_SIZE);
-  const slots = coordinates.map((coord) => ({
-    id: `${coord.x}/${coord.y}`,
-    x: coord.x,
-    y: coord.y,
-  }));
-
-  // if (isLoading) {
-  //   return null;
-  // }
+  if (isLoading) {
+    return null;
+  }
 
   if (!slots) {
     return <div>No slots</div>;
@@ -35,7 +28,7 @@ export default function Fortress() {
           <Box
             key={slot.id}
             position={getCanvasPosition(slot.x, slot.y)}
-            label={slot.id.toString()}
+            label={`${slot.x}/${slot.y}`}
             onClick={() => console.log("click")}
           />
         );
