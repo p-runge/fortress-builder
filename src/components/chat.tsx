@@ -1,6 +1,6 @@
 "use client";
 
-import { faComments } from "@fortawesome/free-solid-svg-icons";
+import { faComments, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Sheet,
@@ -13,27 +13,40 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
+import { FormEventHandler } from "react";
+import { getLocale } from "~/i18n";
 
 export default function Chat() {
   const { data: session } = useSession();
+  const locale = getLocale();
 
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (formEvent) => {
+    formEvent.preventDefault();
+    const message = formEvent.currentTarget.message.value;
+    if (message.length > 0) {
+      console.log(message);
+      formEvent.currentTarget.reset();
+    }
+  };
+
+  // TODO: Read from API
   const messages = [
     {
       content: "Test Message 1",
       username: "acidaufraedern",
-      sendAt: new Date(),
+      sentAt: new Date(),
     },
     {
       content: "Test Message 2 Test Message 2 ",
       username: "Test User 2",
-      sendAt: new Date(),
+      sentAt: new Date(),
     },
     {
       content: "Test Message 3 Test Message 3 Test Message 3 ",
       username: "Test User 3",
-      sendAt: new Date(),
+      sentAt: new Date(),
     },
-    { content: "Test Message 4", username: "Test User 4", sendAt: new Date() },
+    { content: "T", username: "Test User 4", sentAt: new Date() },
   ];
 
   return (
@@ -46,8 +59,8 @@ export default function Chat() {
         />
       </SheetTrigger>
       {session && (
-        <SheetContent>
-          <SheetHeader>
+        <SheetContent className="p-4">
+          <SheetHeader className="p-0">
             <SheetTitle>Chat</SheetTitle>
             <SheetDescription>
               This is a global chat for Fortress Builder. Stay connected with
@@ -55,17 +68,21 @@ export default function Chat() {
             </SheetDescription>
           </SheetHeader>
           <div className="flex h-full flex-col gap-2">
-            <div className="flex max-h-48 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
+            <div className="flex grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
               {messages.map((message) => {
                 return (
                   <div
                     key={message.content}
-                    className={`mb-2 max-w-4/5 rounded border border-white bg-gray-500 px-1 ${message.username === session?.user?.name ? "self-start" : "self-end"}`}
+                    className={`mb-2 w-4/5 rounded border border-white px-1 ${message.username !== session?.user?.name ? "self-start bg-gray-500" : "self-end bg-gray-700"}`}
                   >
                     <div className="flex justify-between">
                       <div className="text-xs">{message.username}</div>
                       <div className="text-xs">
-                        {message.sendAt.toISOString()}
+                        {new Intl.DateTimeFormat(locale, {
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                        }).format(message.sentAt)}
                       </div>
                     </div>
                     <span>{message.content}</span>
@@ -73,8 +90,12 @@ export default function Chat() {
                 );
               })}
             </div>
-            <Input placeholder="Type your message here" />
-            <Button type="submit">Send</Button>
+            <form className="flex gap-x-2" onSubmit={handleSubmit}>
+              <Input name="message" placeholder="Type your message here" />
+              <Button>
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </Button>
+            </form>
           </div>
         </SheetContent>
       )}
