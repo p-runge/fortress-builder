@@ -1,5 +1,5 @@
 import UI from "~/components/ui";
-import Fortress from "./_components/fortress";
+import Fortress from "./_components/3d-fortress";
 
 // type AppRouterPage<T extends string> = (props: {
 //   searchParams: Promise<Partial<Record<T, string>>>;
