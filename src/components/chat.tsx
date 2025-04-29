@@ -15,6 +15,7 @@ import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
 import { FormEventHandler } from "react";
 import { getLocale } from "~/i18n";
+import { cn } from "~/lib/utils";
 
 export default function Chat() {
   const { data: session } = useSession();
@@ -73,7 +74,12 @@ export default function Chat() {
                 return (
                   <div
                     key={message.content}
-                    className={`mb-2 w-4/5 rounded border border-white px-1 ${message.username !== session?.user?.name ? "self-start bg-gray-500" : "self-end bg-gray-700"}`}
+                    className={cn(
+                      "mb-2 w-4/5 rounded border border-white px-1",
+                      message.username !== session?.user?.name
+                        ? "self-start bg-gray-500"
+                        : "self-end bg-gray-700",
+                    )}
                   >
                     <div className="flex justify-between">
                       <div className="text-xs">{message.username}</div>
