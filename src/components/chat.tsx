@@ -18,9 +18,21 @@ export default function Chat() {
   const { data: session } = useSession();
 
   const messages = [
-    { content: "Test Message 1", username: "Test User 1", sendAt: new Date() },
-    { content: "Test Message 2", username: "Test User 2", sendAt: new Date() },
-    { content: "Test Message 3", username: "Test User 3", sendAt: new Date() },
+    {
+      content: "Test Message 1",
+      username: "acidaufraedern",
+      sendAt: new Date(),
+    },
+    {
+      content: "Test Message 2 Test Message 2 ",
+      username: "Test User 2",
+      sendAt: new Date(),
+    },
+    {
+      content: "Test Message 3 Test Message 3 Test Message 3 ",
+      username: "Test User 3",
+      sendAt: new Date(),
+    },
     { content: "Test Message 4", username: "Test User 4", sendAt: new Date() },
   ];
 
@@ -43,19 +55,26 @@ export default function Chat() {
             </SheetDescription>
           </SheetHeader>
           <div className="flex h-full flex-col gap-2">
-            <div className="grow">
+            <div className="flex max-h-48 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
               {messages.map((message) => {
                 return (
-                  <div key={message.content}>
+                  <div
+                    key={message.content}
+                    className={`mb-2 max-w-4/5 rounded border border-white bg-gray-500 px-1 ${message.username === session?.user?.name ? "self-start" : "self-end"}`}
+                  >
+                    <div className="flex justify-between">
+                      <div className="text-xs">{message.username}</div>
+                      <div className="text-xs">
+                        {message.sendAt.toISOString()}
+                      </div>
+                    </div>
                     <span>{message.content}</span>
-                    <div>{message.username}</div>
-                    <div>{message.sendAt.toISOString()}</div>
                   </div>
                 );
               })}
             </div>
-            <Input />
-            <Button>Send</Button>
+            <Input placeholder="Type your message here" />
+            <Button type="submit">Send</Button>
           </div>
         </SheetContent>
       )}
