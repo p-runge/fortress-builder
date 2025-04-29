@@ -6,10 +6,10 @@ import { Mesh } from "three";
 
 export default function Fortress() {
   return (
-    <Canvas camera={{ position: [0, 20, 20], fov: 50 }}>
+    <Canvas camera={{ position: [20, 20, 20], fov: 20 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} />
-      <Box position={[1.2, 0, 0]} />
+      <Box position={[0, 0, 0]} />
     </Canvas>
   );
 }
@@ -30,7 +30,7 @@ function Box(props: {
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
   // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((_state, delta) => (meshRef.current!.rotation.x += delta));
+  useFrame((_state, delta) => (meshRef.current!.rotation.y += delta));
   // Return view, these are regular three.js elements expressed in JSX
   return (
     <mesh
@@ -41,7 +41,7 @@ function Box(props: {
       onPointerOver={() => setHover(true)}
       onPointerOut={() => setHover(false)}
     >
-      <boxGeometry args={[1, 1, 1]} />
+      <cylinderGeometry args={[1, 1, 0.2, 6]} />
       <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
     </mesh>
   );
