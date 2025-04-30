@@ -10,18 +10,19 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
 import { BuildingType, ResourceType } from "~/server/db/client";
 import { BuildingMetric } from "~/server/models/building";
 
 type Props = {
-  x: number;
-  y: number;
+  field: {
+    x: number;
+    y: number;
+  };
+  onClose: () => void;
 };
-export default function NewBuildingDialog({ x, y }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AddBuildingDialog({ field, onClose }: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const locale = getLocale();
@@ -30,10 +31,8 @@ export default function NewBuildingDialog({ x, y }: Props) {
   const { mutateAsync: build } = api.building.build.useMutation();
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Build</Button>
-      </DialogTrigger>
+    // TODO: maybe remove open
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Build new building</DialogTitle>
@@ -66,8 +65,8 @@ export default function NewBuildingDialog({ x, y }: Props) {
                 onClick={async () => {
                   setIsLoading(true);
                   try {
-                    await build({ type, x, y });
-                    setIsOpen(false);
+                    await build({ type, x: field.x, y: field.y });
+                    onClose();
                     router.refresh();
                   } catch {}
                   setIsLoading(false);
