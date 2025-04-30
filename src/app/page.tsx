@@ -1,5 +1,6 @@
 import UI from "~/components/ui";
 import Fortress from "./_components/3d-fortress";
+import { OverlayProvider } from "./_components/overlay-provider";
 
 // type AppRouterPage<T extends string> = (props: {
 //   searchParams: Promise<Partial<Record<T, string>>>;
@@ -22,7 +23,9 @@ export default async function Home({
   return (
     <UI>
       <main className="flex h-full items-center justify-center">
-        <Fortress />
+        <OverlayProvider>
+          <Fortress />
+        </OverlayProvider>
       </main>
     </UI>
   );
