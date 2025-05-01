@@ -1,5 +1,6 @@
 "use client";
 
+// import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "~/api/client";
 import { getLocale } from "~/i18n";
@@ -45,6 +46,8 @@ export default function CollectResourceButton({
 
   const { collectableBuilding } = building;
 
+  // const router = useRouter();
+
   if (!collectableBuilding) {
     return null;
   }
@@ -60,6 +63,14 @@ export default function CollectResourceButton({
         } catch {}
         setIsCollecting(false);
         setCollectableAmount(0);
+
+        /**
+         * The router refresh is needed here to update api data in server components
+         * but does not work because this component gets rendered inside of
+         * @react-three/drei's Html component which is missing Next.js's router
+         * context.
+         */
+        // router.refresh();
       }}
       variant={isFull ? "destructive" : "default"}
     >
