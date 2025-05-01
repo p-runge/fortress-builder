@@ -332,6 +332,24 @@ export function calculateCollectableAmount(
   return amount;
 }
 
+export function getCollectableLimit(building: BuildingWithCollectableBuilding) {
+  if (!building.collectableBuilding) {
+    return 0;
+  }
+
+  const generationRate =
+    BuildingMetric[building.type].upgrades[building.level]!.generation?.rate ??
+    0;
+
+  const generationDuration =
+    BuildingMetric[building.type].upgrades[building.level]!.generation
+      ?.duration ?? 0;
+
+  const limit = generationRate * generationDuration;
+
+  return limit;
+}
+
 export function isCollectableAmountFull(
   building: BuildingWithCollectableBuilding,
 ) {
