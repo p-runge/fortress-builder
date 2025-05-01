@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/api/client";
 import { Button } from "~/components/ui/button";
@@ -26,9 +25,14 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const locale = getLocale();
-  const router = useRouter();
 
-  const { mutateAsync: build } = api.building.build.useMutation();
+  const utils = api.useUtils();
+
+  const { mutateAsync: build } = api.building.build.useMutation({
+    onSuccess() {
+      utils.fortress.getAllSlots.invalidate();
+    },
+  });
 
   return (
     // TODO: maybe remove open
@@ -67,7 +71,6 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
                   try {
                     await build({ type, x: field.x, y: field.y });
                     onClose();
-                    router.refresh();
                   } catch {}
                   setIsLoading(false);
                 }}
