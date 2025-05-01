@@ -89,6 +89,7 @@ function FortressField({ slot }: { slot: FortressSlot }) {
       </Text>
       {slot.building && (
         <CanvasHtml position={[0, 1, 0]}>
+          {/* <UpgradeBuildingEvent building={building} /> */}
           <CollectResourceButton building={slot.building} />
         </CanvasHtml>
       )}
