@@ -2,15 +2,14 @@
 
 import { createContext, useContext, useState } from "react";
 
-const OverlayContext = createContext<{
-  overlays: React.ReactNode[];
-  addOverlay: (overlay: React.ReactNode) => void;
-  removeTopOverlay: () => void;
-}>({
-  overlays: [],
-  addOverlay: () => {},
-  removeTopOverlay: () => {},
-});
+const OverlayContext = createContext<
+  | {
+      overlays: React.ReactNode[];
+      addOverlay: (overlay: React.ReactNode) => void;
+      removeTopOverlay: () => void;
+    }
+  | undefined
+>(undefined);
 
 export function OverlayProvider({ children }: { children: React.ReactNode }) {
   const [overlays, setOverlays] = useState<React.ReactNode[]>([]);
