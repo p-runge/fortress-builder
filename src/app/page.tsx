@@ -1,5 +1,5 @@
 import UI from "~/components/ui";
-import Fortress from "./_components/3d-fortress";
+import Fortress from "./_components/fortress";
 import { OverlayProvider } from "./_components/overlay-provider";
 
 // type AppRouterPage<T extends string> = (props: {
