@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "~/api/client";
 import { getLocale } from "~/i18n";
@@ -17,12 +16,17 @@ export default function CollectResourceButton({
   building: BuildingWithCollectableBuilding;
 }) {
   const [isCollecting, setIsCollecting] = useState(false);
-  const { mutateAsync: collect } = api.building.collect.useMutation();
+
+  const apiUtils = api.useUtils();
+  const { mutateAsync: collect } = api.building.collect.useMutation({
+    onSuccess() {
+      apiUtils.fortress.getAllSlots.invalidate();
+    },
+  });
 
   const [collectableAmount, setCollectableAmount] = useState(0);
   const isFull = isCollectableAmountFull(building);
 
-  const router = useRouter();
   const locale = getLocale();
 
   useEffect(() => {
@@ -56,7 +60,6 @@ export default function CollectResourceButton({
         } catch {}
         setIsCollecting(false);
         setCollectableAmount(0);
-        router.refresh();
       }}
       variant={isFull ? "destructive" : "default"}
     >
