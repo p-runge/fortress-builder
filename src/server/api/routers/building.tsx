@@ -71,6 +71,28 @@ export const buildingRouter = router({
         }
       }
 
+      // remove costs from user resources
+      await db.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          resources: {
+            updateMany: Object.entries(costs).map(([resource, cost]) => ({
+              where: {
+                userId: session.user.id,
+                type: resource as ResourceType,
+              },
+              data: {
+                amount: {
+                  decrement: cost, // decrement the resource amount
+                },
+              },
+            })),
+          },
+        },
+      });
+
       const collectableResourceType = buildingTypeCollectableMap[input.type];
 
       const { id } = await db.building.create({
