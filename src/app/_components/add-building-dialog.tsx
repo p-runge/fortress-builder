@@ -35,7 +35,6 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
   });
 
   return (
-    // TODO: maybe remove open
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

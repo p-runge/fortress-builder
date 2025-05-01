@@ -1,6 +1,6 @@
 "use client";
 
-import { Text } from "@react-three/drei";
+import { Html, Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { Mesh } from "three";
@@ -9,6 +9,11 @@ import { FortressSlot } from "~/server/api/routers/fortress";
 import { getCanvasPosition } from "~/utils/3d";
 import AddBuildingDialog from "./add-building-dialog";
 import { useOverlays } from "./overlay-provider";
+import { Button } from "~/components/ui/button";
+import {
+  calculateCollectableAmount,
+  getCollectableLimit,
+} from "~/server/models/building";
 
 export default function Fortress() {
   const { data: slots, isLoading } = api.fortress.getAllSlots.useQuery();
@@ -54,6 +59,22 @@ function FortressField({ slot }: { slot: FortressSlot }) {
 
   const { addOverlay, removeTopOverlay } = useOverlays();
 
+  const apiUtils = api.useUtils();
+  const { mutate: collect } = api.building.collect.useMutation({
+    onSuccess() {
+      apiUtils.fortress.getAllSlots.invalidate();
+    },
+  });
+
+  const collectableBuilding = slot.building?.collectableBuilding;
+  const collectableAmount =
+    slot.building && calculateCollectableAmount(slot.building);
+  const collectableLimit = slot.building && getCollectableLimit(slot.building);
+  const collectableFillLevel =
+    collectableAmount &&
+    collectableLimit &&
+    collectableAmount / collectableLimit;
+
   return (
     <mesh
       position={position}
@@ -85,6 +106,20 @@ function FortressField({ slot }: { slot: FortressSlot }) {
       >
         {label}
       </Text>
+      {collectableBuilding &&
+        collectableAmount &&
+        collectableFillLevel &&
+        collectableFillLevel > 0.1 && (
+          <Html position={[0, 1, 0]}>
+            <Button
+              onClick={() => {
+                collect({ id: collectableBuilding.id });
+              }}
+            >
+              {`Collect ${collectableAmount}`}
+            </Button>
+          </Html>
+        )}
     </mesh>
   );
 }
