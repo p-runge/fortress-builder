@@ -4,6 +4,7 @@ import { auth, signIn } from "../auth";
 import { z } from "zod";
 import { db } from "../db";
 import { env } from "~/env";
+import { ensureUserHasFortress } from "../db/relational-integrity";
 
 const SessionSchema = z
   .object({
@@ -58,6 +59,15 @@ export const createTRPCContext = cache(async () => {
       message: "Session validation failed",
     });
   }
+
+  /**
+   * This takes 50-100ms on prod which is a lot to do on every request.
+   * TODO: Either improve prod performance or think of a better place to do this.
+   */
+  const startTime = Date.now();
+  await ensureUserHasFortress(parsedSession.data.user.id);
+  const endTime = Date.now();
+  console.log(`Relational integrity check took ${endTime - startTime}ms`);
 
   return {
     session: parsedSession.data,

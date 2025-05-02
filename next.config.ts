@@ -5,6 +5,9 @@ import "./src/env";
 import { seedDatabase } from "./src/server/db/seeding";
 seedDatabase();
 
+import { ensureRelationalIntegrity } from "./src/server/db/relational-integrity";
+ensureRelationalIntegrity();
+
 // start the worker to handle jobs in dev mode
 import "~/server/jobs";
 
