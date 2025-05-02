@@ -1,15 +1,8 @@
 "use client";
 
-import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useRef, useState } from "react";
-import { Mesh } from "three";
 import { api } from "~/api/client";
-import { CanvasHtml } from "~/components/canvas-html";
-import CollectResourceButton from "~/components/collect-resource-button";
-import { FortressSlot } from "~/server/api/routers/fortress";
-import { getCanvasPosition } from "~/utils/3d";
-import AddBuildingDialog from "./add-building-dialog";
+import FortressField from "./fortress-field";
 import { useOverlays } from "./overlay-provider";
 
 export default function Fortress() {
@@ -44,55 +37,5 @@ export default function Fortress() {
         ))}
       </div>
     </div>
-  );
-}
-
-function FortressField({ slot }: { slot: FortressSlot }) {
-  const meshRef = useRef<Mesh>(null);
-  const [hovered, setHover] = useState(false);
-
-  const position = getCanvasPosition(slot.x, slot.y);
-  const label = slot.building?.type ?? "[ + ]";
-
-  const { addOverlay, removeTopOverlay } = useOverlays();
-
-  return (
-    <mesh
-      position={position}
-      ref={meshRef}
-      onClick={() => {
-        if (!slot.building) {
-          addOverlay(
-            <AddBuildingDialog
-              field={{ x: slot.x, y: slot.y }}
-              onClose={() => {
-                removeTopOverlay();
-              }}
-            />,
-          );
-        }
-      }}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
-    >
-      <cylinderGeometry args={[1, 1, 0.2, 6]} />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
-      <Text
-        position={[0, 0.2, 0]}
-        fontSize={0.2}
-        rotation={[-Math.PI / 2, 0, 0]}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {label}
-      </Text>
-      {slot.building && (
-        <CanvasHtml position={[0, 1, 0]}>
-          {/* <UpgradeBuildingEvent building={building} /> */}
-          <CollectResourceButton building={slot.building} />
-        </CanvasHtml>
-      )}
-    </mesh>
   );
 }
