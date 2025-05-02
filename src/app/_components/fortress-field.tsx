@@ -10,6 +10,7 @@ import { FortressSlot } from "~/server/api/routers/fortress";
 import {
   BuildingWithCollectableBuilding,
   calculateCollectableAmount,
+  getCollectableLimit,
 } from "~/server/models/building";
 import { getCanvasPosition } from "~/utils/3d";
 import AddBuildingDialog from "./add-building-dialog";
@@ -124,6 +125,7 @@ function FortressFieldWithCollectableBuilding({
 
   const [isCollecting, setIsCollecting] = useState(false);
   const [collectableAmount, setCollectableAmount] = useState(0);
+  const collectableThreshold = 0.1 * getCollectableLimit(slot.building);
   // const isFull = isCollectableAmountFull(slot.building);
 
   useEffect(() => {
@@ -158,12 +160,18 @@ function FortressFieldWithCollectableBuilding({
         slot.building.type,
         collectableBuilding &&
           collectableAmount &&
+          collectableAmount >= collectableThreshold &&
           `Collect ${new Intl.NumberFormat(locale).format(collectableAmount)} ${collectableBuilding.resourceType}`,
       ]
         .filter(Boolean)
         .join("\n")}
       onClick={async () => {
-        if (!isCollecting && collectableBuilding && collectableAmount) {
+        if (
+          !isCollecting &&
+          collectableBuilding &&
+          collectableAmount &&
+          collectableAmount >= collectableThreshold
+        ) {
           setIsCollecting(true);
           try {
             await collect({
