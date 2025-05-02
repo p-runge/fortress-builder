@@ -17,6 +17,7 @@ import {
 import { getCanvasPosition } from "~/utils/3d";
 import AddBuildingDialog from "./add-building-dialog";
 import { useOverlays } from "./overlay-provider";
+import BuildingDetailsDialog from "./building-details-dialog";
 
 export default function FortressField({ field }: { field: TFortressField }) {
   const { building } = field;
@@ -112,13 +113,22 @@ function FortressFieldWithBuilding({
 }: {
   field: TFortressField & { building: BuildingWithCollectableBuilding };
 }) {
-  const label = field.building.type;
+  const label = `${field.building.type} Lv. ${field.building.level}`;
+
+  const { addOverlay, removeTopOverlay } = useOverlays();
 
   return (
     <FortressFieldBase
       position={{ x: field.x, y: field.y }}
       label={label}
-      onClick={() => {}}
+      onClick={() => {
+        addOverlay(
+          <BuildingDetailsDialog
+            building={field.building}
+            onClose={() => removeTopOverlay()}
+          />,
+        );
+      }}
     />
   );
 }
@@ -168,7 +178,7 @@ function FortressFieldWithCollectableBuilding({
     <FortressFieldBase
       position={{ x: field.x, y: field.y }}
       label={[
-        field.building.type,
+        `${field.building.type} Lv. ${field.building.level}`,
         collectableBuilding &&
           collectableAmount &&
           collectableAmount >= collectableThreshold &&
