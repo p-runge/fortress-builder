@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mesh } from "three";
 import { api } from "~/api/client";
 import { getLocale } from "~/i18n";
-import { FortressSlot } from "~/server/api/routers/fortress";
+import { FortressField as TFortressField } from "~/server/api/routers/fortress";
 import {
   BuildingWithCollectableBuilding,
   calculateCollectableAmount,
@@ -18,18 +18,18 @@ import { getCanvasPosition } from "~/utils/3d";
 import AddBuildingDialog from "./add-building-dialog";
 import { useOverlays } from "./overlay-provider";
 
-export default function FortressField({ slot }: { slot: FortressSlot }) {
-  const { building } = slot;
+export default function FortressField({ field }: { field: TFortressField }) {
+  const { building } = field;
 
   if (!building) {
-    return <EmptyFortressField slot={slot} />;
+    return <EmptyFortressField field={field} />;
   }
 
   if (building.collectableBuilding) {
     return (
       <FortressFieldWithCollectableBuilding
-        slot={
-          slot as FortressSlot & {
+        field={
+          field as TFortressField & {
             building: BuildingWithCollectableBuilding & {
               collectableBuilding: CollectableBuilding;
             };
@@ -41,8 +41,8 @@ export default function FortressField({ slot }: { slot: FortressSlot }) {
 
   return (
     <FortressFieldWithBuilding
-      slot={
-        slot as FortressSlot & { building: BuildingWithCollectableBuilding }
+      field={
+        field as TFortressField & { building: BuildingWithCollectableBuilding }
       }
     />
   );
@@ -86,17 +86,17 @@ function FortressFieldBase({
   );
 }
 
-function EmptyFortressField({ slot }: { slot: FortressSlot }) {
+function EmptyFortressField({ field }: { field: TFortressField }) {
   const { addOverlay, removeTopOverlay } = useOverlays();
 
   return (
     <FortressFieldBase
-      position={{ x: slot.x, y: slot.y }}
+      position={{ x: field.x, y: field.y }}
       label="[ + ]"
       onClick={() => {
         addOverlay(
           <AddBuildingDialog
-            field={{ x: slot.x, y: slot.y }}
+            field={{ x: field.x, y: field.y }}
             onClose={() => {
               removeTopOverlay();
             }}
@@ -108,15 +108,15 @@ function EmptyFortressField({ slot }: { slot: FortressSlot }) {
 }
 
 function FortressFieldWithBuilding({
-  slot,
+  field,
 }: {
-  slot: FortressSlot & { building: BuildingWithCollectableBuilding };
+  field: TFortressField & { building: BuildingWithCollectableBuilding };
 }) {
-  const label = slot.building.type;
+  const label = field.building.type;
 
   return (
     <FortressFieldBase
-      position={{ x: slot.x, y: slot.y }}
+      position={{ x: field.x, y: field.y }}
       label={label}
       onClick={() => {}}
     />
@@ -124,34 +124,34 @@ function FortressFieldWithBuilding({
 }
 
 function FortressFieldWithCollectableBuilding({
-  slot,
+  field,
 }: {
-  slot: FortressSlot & {
+  field: TFortressField & {
     building: BuildingWithCollectableBuilding & {
       collectableBuilding: CollectableBuilding;
     };
   };
 }) {
-  const { collectableBuilding } = slot.building;
+  const { collectableBuilding } = field.building;
 
   const [isCollecting, setIsCollecting] = useState(false);
   const [collectableAmount, setCollectableAmount] = useState(0);
-  const collectableThreshold = 0.1 * getCollectableLimit(slot.building);
-  const isFull = isCollectableAmountFull(slot.building);
+  const collectableThreshold = 0.1 * getCollectableLimit(field.building);
+  const isFull = isCollectableAmountFull(field.building);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!slot.building) {
+      if (!field.building) {
         return;
       }
 
-      const amount = calculateCollectableAmount(slot.building);
+      const amount = calculateCollectableAmount(field.building);
       setCollectableAmount(amount);
     }, 1000);
     return () => {
       clearInterval(interval);
     };
-  }, [slot.building]);
+  }, [field.building]);
 
   const locale = getLocale();
   const router = useRouter();
@@ -159,16 +159,16 @@ function FortressFieldWithCollectableBuilding({
   const apiUtils = api.useUtils();
   const { mutateAsync: collect } = api.building.collect.useMutation({
     onSuccess() {
-      apiUtils.fortress.getAllSlots.invalidate();
+      apiUtils.fortress.getAllFields.invalidate();
       router.refresh();
     },
   });
 
   return (
     <FortressFieldBase
-      position={{ x: slot.x, y: slot.y }}
+      position={{ x: field.x, y: field.y }}
       label={[
-        slot.building.type,
+        field.building.type,
         collectableBuilding &&
           collectableAmount &&
           collectableAmount >= collectableThreshold &&

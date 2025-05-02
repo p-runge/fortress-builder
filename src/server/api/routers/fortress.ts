@@ -3,19 +3,19 @@ import { db } from "~/server/db";
 import { BuildingWithCollectableBuildingSchema } from "~/server/models/building";
 import { authedProcedure, router } from "../trpc";
 
-const FortressSlotSchema = z.object({
+const FortressFieldSchema = z.object({
   id: z.string(),
   x: z.number(),
   y: z.number(),
   building: BuildingWithCollectableBuildingSchema.nullable(),
 });
-export type FortressSlot = z.infer<typeof FortressSlotSchema>;
+export type FortressField = z.infer<typeof FortressFieldSchema>;
 
 export const fortressRouter = router({
-  getAllSlots: authedProcedure
-    .output(z.array(FortressSlotSchema))
+  getAllFields: authedProcedure
+    .output(z.array(FortressFieldSchema))
     .query(async ({ ctx: { session } }) => {
-      return await db.fortressSlot.findMany({
+      return await db.fortressField.findMany({
         where: {
           fortress: {
             userId: session.user.id,

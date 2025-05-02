@@ -20,7 +20,7 @@ export async function ensureUserHasFortress(userId: string) {
     fortress = await db.fortress.create({
       data: {
         userId,
-        slots: {
+        fields: {
           createMany: {
             data: getCoordinatesForSize(FORTRESS_SIZE).map(({ x, y }) => ({
               x,
@@ -32,22 +32,22 @@ export async function ensureUserHasFortress(userId: string) {
     });
   }
 
-  // Ensure the Fortress has the correct number of slots
-  const existingSlots = await db.fortressSlot.findMany({
+  // Ensure the Fortress has the correct number of fields
+  const existingFields = await db.fortressField.findMany({
     where: { fortressId: fortress.id },
   });
 
-  const requiredSlots = getCoordinatesForSize(FORTRESS_SIZE);
-  if (existingSlots.length < requiredSlots.length) {
-    const missingSlots = requiredSlots.filter(
-      (slot) =>
-        !existingSlots.some(
-          (existingSlot) =>
-            existingSlot.x === slot.x && existingSlot.y === slot.y,
+  const requiredFields = getCoordinatesForSize(FORTRESS_SIZE);
+  if (existingFields.length < requiredFields.length) {
+    const missingFields = requiredFields.filter(
+      (field) =>
+        !existingFields.some(
+          (existingField) =>
+            existingField.x === field.x && existingField.y === field.y,
         ),
     );
-    await db.fortressSlot.createMany({
-      data: missingSlots.map(({ x, y }) => ({
+    await db.fortressField.createMany({
+      data: missingFields.map(({ x, y }) => ({
         fortressId: fortress.id,
         x,
         y,

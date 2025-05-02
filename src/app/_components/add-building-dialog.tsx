@@ -30,7 +30,7 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
 
   const { mutateAsync: build } = api.building.build.useMutation({
     onSuccess() {
-      utils.fortress.getAllSlots.invalidate();
+      utils.fortress.getAllFields.invalidate();
     },
   });
 

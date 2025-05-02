@@ -24,8 +24,8 @@ export const buildingRouter = router({
     )
     .output(z.string())
     .mutation(async ({ input, ctx: { session } }) => {
-      // check if fortress slot is available
-      const fortressSlot = await db.fortressSlot.findFirst({
+      // check if fortress field is available
+      const fortressField = await db.fortressField.findFirst({
         where: {
           fortress: {
             userId: session.user.id,
@@ -37,16 +37,16 @@ export const buildingRouter = router({
           building: true,
         },
       });
-      if (!fortressSlot) {
+      if (!fortressField) {
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
-          message: "Fortress slot not found.",
+          message: "Fortress field not found.",
         });
       }
-      if (fortressSlot?.building) {
+      if (fortressField?.building) {
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
-          message: "Fortress slot is already occupied.",
+          message: "Fortress field is already occupied.",
         });
       }
 
@@ -101,9 +101,9 @@ export const buildingRouter = router({
         },
         data: {
           type: input.type,
-          fortressSlot: {
+          fortressField: {
             connect: {
-              id: fortressSlot.id,
+              id: fortressField.id,
             },
           },
           collectableBuilding: collectableResourceType && {
@@ -124,7 +124,7 @@ export const buildingRouter = router({
       const building = await db.building.findUniqueOrThrow({
         where: {
           id: input.id,
-          fortressSlot: {
+          fortressField: {
             fortress: {
               userId: session.user.id,
             },
@@ -196,7 +196,7 @@ export const buildingRouter = router({
       await db.building.update({
         where: {
           id: input.id,
-          fortressSlot: {
+          fortressField: {
             fortress: {
               userId: session.user.id,
             },
@@ -224,7 +224,7 @@ export const buildingRouter = router({
       await db.building.findUniqueOrThrow({
         where: {
           id: input.id,
-          fortressSlot: {
+          fortressField: {
             fortress: {
               userId: session.user.id,
             },
@@ -269,7 +269,7 @@ export const buildingRouter = router({
           where: {
             id: input.id,
             building: {
-              fortressSlot: {
+              fortressField: {
                 fortress: {
                   userId: session.user.id,
                 },

@@ -39,7 +39,7 @@ const authConfig: NextAuthConfig = {
       await db.fortress.create({
         data: {
           userId,
-          slots: {
+          fields: {
             createMany: {
               data: getCoordinatesForSize(FORTRESS_SIZE).map(({ x, y }) => ({
                 x,

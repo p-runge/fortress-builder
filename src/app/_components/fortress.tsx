@@ -6,7 +6,7 @@ import FortressField from "./fortress-field";
 import { useOverlays } from "./overlay-provider";
 
 export default function Fortress() {
-  const { data: slots, isLoading } = api.fortress.getAllSlots.useQuery();
+  const { data: fields, isLoading } = api.fortress.getAllFields.useQuery();
 
   const { overlays } = useOverlays();
 
@@ -14,8 +14,8 @@ export default function Fortress() {
     return <div>Loading...</div>;
   }
 
-  if (!slots) {
-    return <div>No slots</div>;
+  if (!fields) {
+    return <div>No fields</div>;
   }
 
   return (
@@ -23,9 +23,9 @@ export default function Fortress() {
       <Canvas camera={{ position: [0, 5, 5] }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} />
-        {slots.map((slot) => {
+        {fields.map((field) => {
           // @ts-expect-error date props within building are incorrectly inferred by Zod
-          return <FortressField key={slot.id} slot={slot} />;
+          return <FortressField key={field.id} field={field} />;
         })}
       </Canvas>
       {/* overlay wrapper */}
