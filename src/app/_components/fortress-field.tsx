@@ -10,6 +10,7 @@ import { FortressSlot } from "~/server/api/routers/fortress";
 import {
   BuildingWithCollectableBuilding,
   calculateCollectableAmount,
+  CollectableBuilding,
   getCollectableLimit,
   isCollectableAmountFull,
 } from "~/server/models/building";
@@ -24,17 +25,27 @@ export default function FortressField({ slot }: { slot: FortressSlot }) {
     return <EmptyFortressField slot={slot} />;
   }
 
-  // this makes typescript happy
-  const slotWithBuilding = {
-    ...slot,
-    building: building!,
-  };
-
   if (building.collectableBuilding) {
-    return <FortressFieldWithCollectableBuilding slot={slotWithBuilding} />;
+    return (
+      <FortressFieldWithCollectableBuilding
+        slot={
+          slot as FortressSlot & {
+            building: BuildingWithCollectableBuilding & {
+              collectableBuilding: CollectableBuilding;
+            };
+          }
+        }
+      />
+    );
   }
 
-  return <FortressFieldWithBuilding slot={slotWithBuilding} />;
+  return (
+    <FortressFieldWithBuilding
+      slot={
+        slot as FortressSlot & { building: BuildingWithCollectableBuilding }
+      }
+    />
+  );
 }
 
 function FortressFieldBase({
@@ -75,27 +86,6 @@ function FortressFieldBase({
   );
 }
 
-function FortressFieldWithBuilding({
-  slot,
-}: {
-  slot: FortressSlot & { building: BuildingWithCollectableBuilding };
-}) {
-  const label = slot.building.type;
-
-  return (
-    <FortressFieldBase
-      position={{ x: slot.x, y: slot.y }}
-      label={label}
-      onClick={() => {
-        if (slot.building) {
-          if (slot.building.collectableBuilding) {
-          }
-        }
-      }}
-    />
-  );
-}
-
 function EmptyFortressField({ slot }: { slot: FortressSlot }) {
   const { addOverlay, removeTopOverlay } = useOverlays();
 
@@ -117,10 +107,30 @@ function EmptyFortressField({ slot }: { slot: FortressSlot }) {
   );
 }
 
-function FortressFieldWithCollectableBuilding({
+function FortressFieldWithBuilding({
   slot,
 }: {
   slot: FortressSlot & { building: BuildingWithCollectableBuilding };
+}) {
+  const label = slot.building.type;
+
+  return (
+    <FortressFieldBase
+      position={{ x: slot.x, y: slot.y }}
+      label={label}
+      onClick={() => {}}
+    />
+  );
+}
+
+function FortressFieldWithCollectableBuilding({
+  slot,
+}: {
+  slot: FortressSlot & {
+    building: BuildingWithCollectableBuilding & {
+      collectableBuilding: CollectableBuilding;
+    };
+  };
 }) {
   const { collectableBuilding } = slot.building;
 
@@ -171,7 +181,6 @@ function FortressFieldWithCollectableBuilding({
       onClick={async () => {
         if (
           !isCollecting &&
-          collectableBuilding &&
           collectableAmount &&
           collectableAmount >= collectableThreshold
         ) {
