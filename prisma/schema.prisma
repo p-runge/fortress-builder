@@ -97,7 +97,7 @@ model FortressSlot {
   updatedAt DateTime @default(now()) @updatedAt()
 
   buildingId String?   @unique
-  building   Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  building   Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   fortressId String
   fortress   Fortress  @relation(fields: [fortressId], references: [id], onDelete: Cascade)
 
