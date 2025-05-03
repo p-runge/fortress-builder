@@ -48,6 +48,11 @@ export default function UpgradeBuildingEvent({
   const upgradeTime =
     BuildingMetric[building.type].upgrades[building.level + 1]?.time;
 
+  const maxLevel = Math.max(
+    ...Object.keys(BuildingMetric[building.type].upgrades).map(Number),
+  );
+  const nextLevel = building.level + 1 > maxLevel ? null : building.level + 1;
+
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       <p className="text-gray-500">
@@ -59,7 +64,9 @@ export default function UpgradeBuildingEvent({
               "Upgrade finished"}
       </p>
       <Button
-        disabled={isLoading || !!building.upgradeStart || building.level >= 5}
+        disabled={
+          isLoading || !!building.upgradeStart || building.level >= maxLevel
+        }
         onClick={async () => {
           setIsLoading(true);
           try {
@@ -71,7 +78,9 @@ export default function UpgradeBuildingEvent({
           setIsLoading(false);
         }}
       >
-        Upgrade
+        {nextLevel
+          ? `Upgrade to Lv. ${building.level + 1}`
+          : "Max level reached"}
       </Button>
     </div>
   );
