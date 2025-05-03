@@ -27,17 +27,23 @@ export default function FortressField({ field }: { field: TFortressField }) {
   }
 
   if (building.collectableBuilding) {
-    return (
-      <FortressFieldWithCollectableBuilding
-        field={
-          field as TFortressField & {
-            building: BuildingWithCollectableBuilding & {
-              collectableBuilding: CollectableBuilding;
-            };
+    const collectableAmount = calculateCollectableAmount(field.building!);
+    const collectableThreshold = 0.1 * getCollectableLimit(field.building!);
+
+    if (collectableAmount && collectableAmount >= collectableThreshold) {
+      // show collectable building
+      return (
+        <FortressFieldWithCollectableBuilding
+          field={
+            field as TFortressField & {
+              building: BuildingWithCollectableBuilding & {
+                collectableBuilding: CollectableBuilding;
+              };
+            }
           }
-        }
-      />
-    );
+        />
+      );
+    }
   }
 
   return (
