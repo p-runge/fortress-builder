@@ -8,8 +8,10 @@ import { Button } from "./ui/button";
 
 export default function UpgradeBuildingEvent({
   building,
+  onUpgrade,
 }: {
   building: Building;
+  onUpgrade?: () => void;
 }) {
   const router = useRouter();
 
@@ -23,7 +25,14 @@ export default function UpgradeBuildingEvent({
       },
     },
   );
-  const { mutateAsync: startUpgrade } = api.building.startUpgrade.useMutation();
+
+  const utils = api.useUtils();
+  const { mutateAsync: startUpgrade } = api.building.startUpgrade.useMutation({
+    onSuccess() {
+      // trigger a refetch of the buildings from the page to reinitialize the component
+      utils.fortress.getAllFields.invalidate();
+    },
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [remainingTime, setRemainingTime] = useState(0);
 
@@ -71,9 +80,7 @@ export default function UpgradeBuildingEvent({
           setIsLoading(true);
           try {
             await startUpgrade({ id: building.id });
-
-            // trigger a refetch of the buildings from the page to reinitialize the component
-            router.refresh();
+            onUpgrade?.();
           } catch {}
           setIsLoading(false);
         }}

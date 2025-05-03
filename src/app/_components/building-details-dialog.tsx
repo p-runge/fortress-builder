@@ -25,7 +25,7 @@ export default function BuildingDetailsDialog({
             {building.level > 0 ? ` (Level ${building.level})` : ""}
           </DialogDescription>
         </DialogHeader>
-        <UpgradeBuildingEvent building={building} />
+        <UpgradeBuildingEvent building={building} onUpgrade={onClose} />
       </DialogContent>
     </Dialog>
   );
