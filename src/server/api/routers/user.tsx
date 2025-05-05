@@ -2,6 +2,7 @@ import { db } from "~/server/db";
 import { authedProcedure, router } from "../trpc";
 import { z } from "zod";
 import { RequestStatus } from "~/server/db/client";
+import { TRPCError } from "@trpc/server";
 
 const UserSchema = z.object({
   id: z.string(),
@@ -49,4 +50,88 @@ export const userRouter = router({
       });
     },
   ),
+
+  acceptContactRequest: authedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx: { session }, input }) => {
+      const contactRequest = await db.contactRequest.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          fromId: true,
+          toId: true,
+        },
+      });
+
+      if (!contactRequest) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Contact request not found",
+        });
+      }
+
+      if (contactRequest.toId !== session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to accept this contact request",
+        });
+      }
+
+      await db.contactRequest.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: RequestStatus.ACCEPTED,
+        },
+      });
+
+      await db.user.update({
+        where: {
+          id: contactRequest.fromId,
+        },
+        data: {
+          contacts: {
+            connect: {
+              id: session.user.id,
+            },
+          },
+        },
+      });
+    }),
+
+  rejectContactRequest: authedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx: { session }, input }) => {
+      const contactRequest = await db.contactRequest.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          fromId: true,
+          toId: true,
+        },
+      });
+
+      if (!contactRequest) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Contact request not found",
+        });
+      }
+
+      if (contactRequest.toId !== session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to reject this contact request",
+        });
+      }
+
+      await db.contactRequest.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });
