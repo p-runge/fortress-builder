@@ -203,4 +203,34 @@ export const userRouter = router({
         },
       });
     }),
+
+  deleteContact: authedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx: { session }, input }) => {
+      const user = await db.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      await db.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          contacts: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    }),
 });
