@@ -50,6 +50,20 @@ export const buildingRouter = router({
         });
       }
 
+      //check if user has already reached limit of allowed buildings of a type
+      const countBuildingAmount = await db.building.count({
+        where: {
+          fortressField: { fortress: { userId: session.user.id } },
+          type: input.type,
+        },
+      });
+      if (countBuildingAmount >= BuildingMetric[input.type].limit) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Allowed limit reached for this building.",
+        });
+      }
+
       // check if user has enough resources to build building
       const resources = await db.resource.findMany({
         where: {
