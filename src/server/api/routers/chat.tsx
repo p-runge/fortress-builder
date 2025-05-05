@@ -3,7 +3,98 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { authedProcedure, router } from "../trpc";
 
+const ChatRoomSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().nullable(),
+  isPublic: z.boolean(),
+  participants: z.array(
+    z.object({
+      id: z.string().cuid(),
+      name: z.string(),
+      image: z.string().nullable(),
+    }),
+  ),
+  messages: z.array(
+    z.object({
+      id: z.string().cuid(),
+      content: z.string(),
+      createdAt: z.date(),
+      sender: z.object({
+        id: z.string().cuid(),
+        name: z.string(),
+        image: z.string().nullable(),
+      }),
+    }),
+  ),
+});
+
 export const chatRouter = router({
+  getChatRoomByName: authedProcedure
+    .input(z.object({ name: z.string() }))
+    .output(ChatRoomSchema)
+    .query(async ({ input, ctx: { session } }) => {
+      const chatRoom = await db.chatRoom.findUnique({
+        where: {
+          name: input.name,
+        },
+        select: {
+          id: true,
+          name: true,
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              sender: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chat room not found",
+        });
+      }
+      if (!chatRoom.isPublic) {
+        const isParticipant = chatRoom.participants.some(
+          (user) => user.id === session.user.id,
+        );
+        if (!isParticipant) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You are not a participant of this chat room",
+          });
+        }
+      } else {
+        const isParticipant = chatRoom.participants.some(
+          (user) => user.id === session.user.id,
+        );
+        if (!isParticipant) {
+          throw new TRPCError({
+            code: "UNPROCESSABLE_CONTENT",
+            message: "You must join the chat room to get messages",
+          });
+        }
+      }
+
+      return chatRoom;
+    }),
+
   sendMessageToUser: authedProcedure
     .input(z.object({ contactUserId: z.string().cuid(), message: z.string() }))
     .output(z.void())
