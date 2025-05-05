@@ -61,6 +61,7 @@ export const userRouter = router({
         select: {
           fromId: true,
           toId: true,
+          status: true,
         },
       });
 
@@ -75,6 +76,13 @@ export const userRouter = router({
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You are not allowed to accept this contact request",
+        });
+      }
+
+      if (contactRequest.status !== RequestStatus.PENDING) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Contact request cannot be accepted",
         });
       }
 
@@ -111,6 +119,7 @@ export const userRouter = router({
         select: {
           fromId: true,
           toId: true,
+          status: true,
         },
       });
 
@@ -125,6 +134,13 @@ export const userRouter = router({
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You are not allowed to reject this contact request",
+        });
+      }
+
+      if (contactRequest.status !== RequestStatus.PENDING) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Contact request cannot be rejected",
         });
       }
 
