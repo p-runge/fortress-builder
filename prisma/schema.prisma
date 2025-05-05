@@ -25,6 +25,8 @@ model User {
   fortress  Fortress?
   resources Resource[]
   items     UserItems[]
+  contacts  User[]      @relation("UserContacts") // contacts that this user has added
+  contactOf User[]      @relation("UserContacts") // users who have added this user as a contact
 }
 
 model Account {
