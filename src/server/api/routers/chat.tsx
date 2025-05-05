@@ -162,4 +162,53 @@ export const chatRouter = router({
         });
       }
     }),
+
+  joinChatRoom: authedProcedure
+    .input(z.object({ name: z.string() }))
+    .output(z.void())
+    .mutation(async ({ ctx: { session }, input }) => {
+      const chatRoom = await db.chatRoom.findUnique({
+        where: {
+          name: input.name,
+        },
+        select: {
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chat room not found",
+        });
+      }
+      if (!chatRoom.isPublic) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You cannot join a private chat room",
+        });
+      }
+
+      if (chatRoom.participants.some((user) => user.id === session.user.id)) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "You are already a participant of this chat room",
+        });
+      }
+
+      await db.chatRoom.update({
+        where: {
+          name: input.name,
+        },
+        data: {
+          participants: {
+            connect: { id: session.user.id },
+          },
+        },
+      });
+    }),
 });
