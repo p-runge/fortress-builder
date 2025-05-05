@@ -108,4 +108,58 @@ export const chatRouter = router({
 
       return chatRoom.id;
     }),
+
+  addUsersToChatRoom: authedProcedure
+    .input(
+      z.object({
+        chatRoomId: z.string().cuid(),
+        userIds: z.array(z.string().cuid()),
+      }),
+    )
+    .output(z.void())
+    .mutation(async ({ ctx: { session }, input }) => {
+      const chatRoom = await db.chatRoom.findUnique({
+        where: {
+          id: input.chatRoomId,
+        },
+        select: {
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chat room not found",
+        });
+      }
+      if (chatRoom.isPublic) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Users cannot be added to public chat rooms",
+        });
+      }
+
+      if (chatRoom.participants.some((user) => user.id === session.user.id)) {
+        await db.chatRoom.update({
+          where: {
+            id: input.chatRoomId,
+          },
+          data: {
+            participants: {
+              connect: input.userIds.map((userId) => ({ id: userId })),
+            },
+          },
+        });
+      } else {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not a participant of this chat room",
+        });
+      }
+    }),
 });
