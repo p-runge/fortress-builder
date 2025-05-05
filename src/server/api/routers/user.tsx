@@ -5,7 +5,7 @@ import { RequestStatus } from "~/server/db/client";
 import { TRPCError } from "@trpc/server";
 
 const UserSchema = z.object({
-  id: z.string(),
+  id: z.string().cuid(),
   name: z.string(),
   image: z.string().nullable(),
 });
@@ -50,6 +50,59 @@ export const userRouter = router({
       });
     },
   ),
+
+  createContactRequest: authedProcedure
+    .input(z.object({ userId: z.string() }))
+    .output(z.string().cuid())
+    .mutation(async ({ ctx: { session }, input }) => {
+      const user = await db.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      if (user.id === session.user.id) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "You cannot send a contact request to yourself",
+        });
+      }
+
+      const existingRequest = await db.contactRequest.findFirst({
+        where: {
+          fromId: session.user.id,
+          toId: user.id,
+          status: RequestStatus.PENDING,
+        },
+      });
+
+      if (existingRequest) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Contact request already sent",
+        });
+      }
+
+      const contactRequest = await db.contactRequest.create({
+        data: {
+          fromId: session.user.id,
+          toId: user.id,
+          status: RequestStatus.PENDING,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      return contactRequest.id;
+    }),
 
   acceptContactRequest: authedProcedure
     .input(z.object({ id: z.string() }))
