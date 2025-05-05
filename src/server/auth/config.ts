@@ -35,7 +35,7 @@ const authConfig: NextAuthConfig = {
         })),
       });
 
-      //  Create fortress for the new user
+      // Create fortress for the new user
       await db.fortress.create({
         data: {
           userId,
@@ -46,6 +46,19 @@ const authConfig: NextAuthConfig = {
                 y,
               })),
             },
+          },
+        },
+      });
+
+      // Join global chat room
+      await db.chatRoom.update({
+        where: {
+          // This room is created in the database seeding
+          name: "Global",
+        },
+        data: {
+          participants: {
+            connect: { id: user.id },
           },
         },
       });
