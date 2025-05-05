@@ -1,20 +1,12 @@
 import { db } from ".";
-import { ItemType } from "./client";
 
 export async function seedDatabase() {
-  const items = await db.item.findMany({ select: { type: true } });
-  const allItemsSeeded = Object.values(ItemType).every((itemType) => {
-    return items.find((item) => item.type === itemType);
-  });
-  if (!allItemsSeeded) {
-    await seedItems();
-  }
+  await seedItems();
+  await seedChatRooms();
 }
 
 async function seedItems() {
-  console.log("Seeding database with items...");
-
-  await db.item.createMany({
+  const { count } = await db.item.createMany({
     data: [
       {
         type: "food_boost_1000",
@@ -52,5 +44,23 @@ async function seedItems() {
     skipDuplicates: true,
   });
 
-  console.log("Database successfully seeded with items!");
+  if (count > 0) {
+    console.log("Database successfully seeded with missing items!");
+  }
+}
+
+async function seedChatRooms() {
+  const { count } = await db.chatRoom.createMany({
+    data: [
+      {
+        name: "Global",
+        isPublic: true,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  if (count > 0) {
+    console.log("Database successfully seeded with missing chat rooms!");
+  }
 }
