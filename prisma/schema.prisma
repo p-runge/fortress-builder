@@ -29,6 +29,9 @@ model User {
   contactOf        User[]           @relation("UserContacts") // users who have added this user as a contact
   sentRequests     ContactRequest[] @relation("SentRequests")
   receivedRequests ContactRequest[] @relation("ReceivedRequests")
+  chatRooms        ChatRoom[]       @relation("RoomParticipants")
+  chatRoomId       String?
+  Message          Message[]
 }
 
 model Account {
@@ -212,4 +215,28 @@ model ContactRequest {
   to     User   @relation("ReceivedRequests", fields: [toId], references: [id])
 
   @@unique([fromId, toId])
+}
+
+model ChatRoom {
+  id       String  @id @default(cuid())
+  name     String? @unique // null = private 1:1 chat
+  isPublic Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants User[]    @relation("RoomParticipants")
+  messages     Message[]
+}
+
+model Message {
+  id      String @id @default(cuid())
+  content String
+
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User     @relation(fields: [senderId], references: [id])
+  roomId   String
+  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
