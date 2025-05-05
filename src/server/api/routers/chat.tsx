@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { authedProcedure, router } from "../trpc";
-import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { db } from "~/server/db";
+import { authedProcedure, router } from "../trpc";
 
 export const chatRouter = router({
   sendMessageToUser: authedProcedure
@@ -70,5 +70,42 @@ export const chatRouter = router({
           },
         });
       }
+    }),
+
+  createChatRoom: authedProcedure
+    .input(z.object({ name: z.string(), isPublic: z.boolean().optional() }))
+    .output(z.string().cuid())
+    .mutation(async ({ ctx: { session }, input }) => {
+      const existingChatRoom = await db.chatRoom.findFirst({
+        where: {
+          name: input.name,
+          participants: {
+            some: {
+              id: session.user.id,
+            },
+          },
+        },
+      });
+      if (existingChatRoom) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Chat room with this name already exists",
+        });
+      }
+
+      const chatRoom = await db.chatRoom.create({
+        data: {
+          name: input.name,
+          isPublic: input.isPublic,
+          participants: {
+            connect: [{ id: session.user.id }],
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      return chatRoom.id;
     }),
 });
