@@ -41,8 +41,16 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
 
   const buildableBuildingTypes = allBuildingTypes.filter((buildingType) => {
     // Check how many buildings are built of this type
+    const builtCount =
+      fields?.filter((field) => field.building?.type === buildingType).length ??
+      0;
     // Check if amount of built building exceeds limit of Metrics
+    const limit = BuildingMetric[buildingType].limit;
+    return builtCount < limit;
   });
+
+  // Delete console log later!
+  console.log(buildableBuildingTypes);
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -74,7 +82,7 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
               <Button
                 variant="outline"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || !buildableBuildingTypes.includes(type)}
                 onClick={async () => {
                   setIsLoading(true);
                   try {
