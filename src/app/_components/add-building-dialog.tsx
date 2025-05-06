@@ -34,6 +34,16 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
     },
   });
 
+  const { data: fields, isLoadingFields } =
+    api.fortress.getAllFields.useQuery();
+
+  const allBuildingTypes = Object.values(BuildingType);
+
+  const buildableBuildingTypes = allBuildingTypes.filter((buildingType) => {
+    // Check how many buildings are built of this type
+    // Check if amount of built building exceeds limit of Metrics
+  });
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
