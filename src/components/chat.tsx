@@ -47,7 +47,7 @@ export default function Chat({ room }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="flex grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
+      <div className="flex h-0 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
         {room.messages.map((message, index) => {
           return (
             <div
