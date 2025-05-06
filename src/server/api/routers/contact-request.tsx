@@ -175,7 +175,7 @@ export const contactRequestRouter = router({
           id: input.id,
         },
         data: {
-          status: RequestStatus.DECLINED,
+          status: RequestStatus.REJECTED,
         },
       });
     }),
