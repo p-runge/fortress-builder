@@ -170,9 +170,12 @@ export const contactRequestRouter = router({
         });
       }
 
-      await db.contactRequest.delete({
+      await db.contactRequest.update({
         where: {
           id: input.id,
+        },
+        data: {
+          status: RequestStatus.DECLINED,
         },
       });
     }),
