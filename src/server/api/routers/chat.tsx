@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { authedProcedure, router } from "../trpc";
 
-const ChatRoomSchema = z.object({
+export const ChatRoomSchema = z.object({
   id: z.string().cuid(),
   name: z.string().nullable(),
   isPublic: z.boolean(),
@@ -27,6 +27,7 @@ const ChatRoomSchema = z.object({
     }),
   ),
 });
+export type ChatRoom = z.infer<typeof ChatRoomSchema>;
 
 export const chatRouter = router({
   getChatRoomByName: authedProcedure
