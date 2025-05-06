@@ -62,6 +62,11 @@ export const chatRouter = router({
                 },
               },
             },
+            // sort descending to get the latest messages first when limiting with take
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 25,
           },
         },
       });
@@ -92,6 +97,12 @@ export const chatRouter = router({
           });
         }
       }
+
+      /**
+       * reverse the messages to get the latest messages at the bottom although
+       * sorting descending in the db query
+       */
+      chatRoom.messages.reverse();
 
       return chatRoom;
     }),
