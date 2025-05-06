@@ -3,13 +3,13 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useEffect, useRef } from "react";
+import { api } from "~/api/client";
 import { getLocale } from "~/i18n";
 import { cn } from "~/lib/utils";
 import { ChatRoom } from "~/server/api/routers/chat";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { api } from "~/api/client";
 
 type Props = {
   room: ChatRoom;
@@ -27,6 +27,15 @@ export default function Chat({ room }: Props) {
     api.chat.sendMessageToChatRoom.useMutation();
 
   const apiUtils = api.useUtils();
+
+  const messagesWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesWrapperRef.current) {
+      messagesWrapperRef.current.scrollTop =
+        messagesWrapperRef.current.scrollHeight;
+    }
+  }, [room.messages]);
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (formEvent) => {
     formEvent.preventDefault();
@@ -47,7 +56,10 @@ export default function Chat({ room }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="flex h-0 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2">
+      <div
+        ref={messagesWrapperRef}
+        className="flex h-0 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2"
+      >
         {room.messages.map((message, index) => {
           return (
             <div
