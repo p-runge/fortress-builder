@@ -170,11 +170,6 @@ export const chatRouter = router({
       const existingChatRoom = await db.chatRoom.findFirst({
         where: {
           name: input.name,
-          participants: {
-            some: {
-              id: session.user.id,
-            },
-          },
         },
       });
       if (existingChatRoom) {
