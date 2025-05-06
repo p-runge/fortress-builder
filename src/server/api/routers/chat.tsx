@@ -96,6 +96,48 @@ export const chatRouter = router({
       return chatRoom;
     }),
 
+  sendMessageToChatRoom: authedProcedure
+    .input(z.object({ name: z.string(), message: z.string() }))
+    .output(z.void())
+    .mutation(async ({ input, ctx: { session } }) => {
+      const chatRoom = await db.chatRoom.findUnique({
+        where: { name: input.name },
+        select: {
+          id: true,
+          isPublic: true,
+          participants: true,
+        },
+      });
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "",
+        });
+      }
+
+      const isParticipant = chatRoom.participants.some(
+        (user) => user.id === session.user.id,
+      );
+      if (!isParticipant) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not a participant of this chat room",
+        });
+      }
+
+      await db.chatRoom.update({
+        where: { name: input.name },
+        data: {
+          messages: {
+            create: {
+              senderId: session.user.id,
+              content: input.message,
+            },
+          },
+        },
+      });
+    }),
+
   sendDirectMessageToUser: authedProcedure
     .input(z.object({ contactUserId: z.string().cuid(), message: z.string() }))
     .output(z.void())
