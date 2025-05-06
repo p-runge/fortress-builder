@@ -96,7 +96,7 @@ export const chatRouter = router({
       return chatRoom;
     }),
 
-  sendMessageToUser: authedProcedure
+  sendDirectMessageToUser: authedProcedure
     .input(z.object({ contactUserId: z.string().cuid(), message: z.string() }))
     .output(z.void())
     .mutation(async ({ ctx: { session }, input }) => {
