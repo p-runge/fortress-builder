@@ -34,8 +34,7 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
     },
   });
 
-  const { data: fields, isLoadingFields } =
-    api.fortress.getAllFields.useQuery();
+  const { data: fields } = api.fortress.getAllFields.useQuery();
 
   const allBuildingTypes = Object.values(BuildingType);
 
@@ -49,8 +48,7 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
     return builtCount < limit;
   });
 
-  // Delete console log later!
-  console.log(buildableBuildingTypes);
+  // `${builtCount}/${limit}` -> im Rendering
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
