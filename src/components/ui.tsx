@@ -15,6 +15,8 @@ import InventoryDialog from "./inventory-dialog";
 import RealMoneyShopDialog from "./real-money-shop-dialog";
 import ShopDialog from "./shop-dialog";
 import UserDropdown from "./user-dropdown";
+import NotificationBell from "./notification-bell";
+import ContactSheet from "./contact-sheet";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const locale = getLocale();
@@ -60,7 +62,10 @@ export default async function UI({ children }: { children: React.ReactNode }) {
                 </span>
               }
             />
-
+            {/* notifications */}
+            <NotificationBell />
+            {/* contact list */}
+            <ContactSheet />
             {/* user info */}
             <UserDropdown />
           </div>
