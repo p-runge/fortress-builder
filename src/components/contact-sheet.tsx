@@ -41,7 +41,10 @@ export default function ContactSheet() {
           <div>
             {contactList?.map((contact) => {
               return (
-                <div key={contact.id} className="flex gap-x-2">
+                <div
+                  key={contact.id}
+                  className="flex items-center justify-between gap-x-2"
+                >
                   {contact.image ? (
                     <Image
                       alt="Discord User Profile Picture"
