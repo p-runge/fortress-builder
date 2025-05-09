@@ -29,6 +29,36 @@ export const userRouter = router({
       });
     }),
 
+  search: authedProcedure
+    .input(
+      z.object({ name: z.string().min(2), exact: z.boolean().default(false) }),
+    )
+    .output(z.array(UserSchema))
+    .query(async ({ input }) => {
+      const users = await db.user.findMany({
+        where: {
+          name: {
+            mode: "insensitive",
+            ...(input.exact
+              ? {
+                  equals: input.name,
+                }
+              : {
+                  contains: input.name,
+                }),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+        take: 10,
+      });
+
+      return users;
+    }),
+
   deleteContact: authedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx: { session }, input }) => {
