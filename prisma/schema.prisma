@@ -22,9 +22,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  fortress  Fortress?
-  resources Resource[]
-  items     UserItems[]
+  fortress         Fortress?
+  resources        Resource[]
+  items            UserItems[]
+  contacts         User[]           @relation("UserContacts") // contacts that this user has added
+  contactOf        User[]           @relation("UserContacts") // users who have added this user as a contact
+  sentRequests     ContactRequest[] @relation("SentRequests")
+  receivedRequests ContactRequest[] @relation("ReceivedRequests")
+  chatRooms        ChatRoom[]       @relation("RoomParticipants")
+  chatRoomId       String?
+  Message          Message[]
 }
 
 model Account {
@@ -187,4 +194,49 @@ model UserItems {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemId])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model ContactRequest {
+  id     String        @id @default(cuid())
+  status RequestStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fromId String
+  from   User   @relation("SentRequests", fields: [fromId], references: [id])
+  toId   String
+  to     User   @relation("ReceivedRequests", fields: [toId], references: [id])
+
+  @@unique([fromId, toId])
+}
+
+model ChatRoom {
+  id       String  @id @default(cuid())
+  name     String? @unique // null = private 1:1 chat
+  isPublic Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants User[]    @relation("RoomParticipants")
+  messages     Message[]
+}
+
+model Message {
+  id      String @id @default(cuid())
+  content String
+
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User     @relation(fields: [senderId], references: [id])
+  roomId   String
+  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
