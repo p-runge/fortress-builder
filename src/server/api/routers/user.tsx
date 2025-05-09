@@ -15,11 +15,22 @@ export const userRouter = router({
     .query(async ({ ctx: { session } }) => {
       return db.user.findMany({
         where: {
-          contacts: {
-            some: {
-              id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: session.user.id,
+                },
+              },
             },
-          },
+            {
+              contactOf: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+          ],
         },
         select: {
           id: true,
