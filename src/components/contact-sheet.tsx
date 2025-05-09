@@ -8,15 +8,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import {
-  faUserPlus,
-  faUsers,
-  faUserXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faUserXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api } from "~/api/client";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import ContactDialog from "./contact-dialog";
 
 export default function ContactSheet() {
   const [open, setOpen] = useState(false);
@@ -39,7 +36,7 @@ export default function ContactSheet() {
         <SheetHeader>
           <div className="flex justify-between px-4">
             <SheetTitle>Contact List</SheetTitle>
-            <FontAwesomeIcon icon={faUserPlus} />
+            <ContactDialog />
           </div>
           <div>
             {contactList?.map((contact) => {
