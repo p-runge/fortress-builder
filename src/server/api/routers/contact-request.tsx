@@ -48,8 +48,7 @@ export const contactRequestRouter = router({
         });
       }
 
-      // Check if the user is already a contact
-      const isContact = !!(await db.user.findFirst({
+      const isAlreadyContact = !!(await db.user.findFirst({
         where: {
           id: session.user.id,
           OR: [
@@ -70,7 +69,7 @@ export const contactRequestRouter = router({
           ],
         },
       }));
-      if (isContact) {
+      if (isAlreadyContact) {
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
           message: "User is already a contact",
@@ -138,6 +137,34 @@ export const contactRequestRouter = router({
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
           message: "Contact request cannot be accepted",
+        });
+      }
+
+      const isAlreadyContact = !!(await db.user.findFirst({
+        where: {
+          id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: contactRequest.fromId,
+                },
+              },
+            },
+            {
+              contactOf: {
+                some: {
+                  id: contactRequest.fromId,
+                },
+              },
+            },
+          ],
+        },
+      }));
+      if (isAlreadyContact) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "User is already a contact",
         });
       }
 
