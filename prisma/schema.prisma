@@ -29,9 +29,9 @@ model User {
   contactOf        User[]           @relation("UserContacts") // users who have added this user as a contact
   sentRequests     ContactRequest[] @relation("SentRequests")
   receivedRequests ContactRequest[] @relation("ReceivedRequests")
-  chatRooms        ChatRoom[]       @relation("RoomParticipants")
   chatRoomId       String?
-  Message          Message[]
+  chatRooms        ChatRoom[]       @relation("RoomParticipants")
+  message          Message[]
 }
 
 model Account {
