@@ -107,6 +107,68 @@ export const chatRouter = router({
       return chatRoom;
     }),
 
+  getPrivateChatRoomWithUser: authedProcedure
+    .input(z.object({ userId: z.string().cuid() }))
+    .output(ChatRoomSchema)
+    .query(async ({ input, ctx: { session } }) => {
+      const chatRoom = await db.chatRoom.findFirst({
+        where: {
+          // only get direct messages between 2 users
+          isPublic: false,
+          name: null,
+          // only get chat rooms where the 2 users are the only participants
+          participants: {
+            none: {
+              id: {
+                not: {
+                  in: [session.user.id, input.userId],
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              sender: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 25,
+          },
+        },
+      });
+
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chat room not found",
+        });
+      }
+
+      return chatRoom;
+    }),
+
   sendMessageToChatRoom: authedProcedure
     .input(z.object({ name: z.string(), message: z.string() }))
     .output(z.void())
