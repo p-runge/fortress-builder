@@ -111,6 +111,48 @@ export const chatRouter = router({
     .input(z.object({ userId: z.string().cuid() }))
     .output(ChatRoomSchema)
     .query(async ({ input, ctx: { session } }) => {
+      // check if the user exists
+      const user = await db.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // check if users are contacts
+      const isContact = await db.user.findFirst({
+        where: {
+          id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: input.userId,
+                },
+              },
+            },
+            {
+              contactOf: {
+                some: {
+                  id: input.userId,
+                },
+              },
+            },
+          ],
+        },
+      });
+      if (!isContact) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You can only chat with your contacts",
+        });
+      }
+
       let chatRoom = await db.chatRoom.findFirst({
         where: {
           // only get direct messages between 2 users
