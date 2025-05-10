@@ -44,7 +44,7 @@ export default function Chat({ room }: Props) {
       if (room.name) {
         const target = formEvent.currentTarget;
         sendMessage({
-          name: room.name,
+          id: room.id,
           message,
         }).then(() => {
           apiUtils.chat.getChatRoomByName.invalidate();
