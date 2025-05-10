@@ -247,11 +247,11 @@ export const chatRouter = router({
     }),
 
   sendMessageToChatRoom: authedProcedure
-    .input(z.object({ name: z.string(), message: z.string() }))
+    .input(z.object({ id: z.string(), message: z.string() }))
     .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {
       const chatRoom = await db.chatRoom.findUnique({
-        where: { name: input.name },
+        where: { id: input.id },
         select: {
           id: true,
           isPublic: true,
@@ -261,7 +261,7 @@ export const chatRouter = router({
       if (!chatRoom) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "",
+          message: "Chat room not found",
         });
       }
 
@@ -276,7 +276,7 @@ export const chatRouter = router({
       }
 
       await db.chatRoom.update({
-        where: { name: input.name },
+        where: { id: input.id },
         data: {
           messages: {
             create: {
