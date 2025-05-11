@@ -35,6 +35,13 @@ const authConfig: NextAuthConfig = {
         })),
       });
 
+      // Create default settings for the new user
+      await db.userSettings.create({
+        data: {
+          userId,
+        },
+      });
+
       // Create fortress for the new user
       await db.fortress.create({
         data: {
