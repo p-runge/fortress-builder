@@ -31,6 +31,7 @@ model User {
   receivedRequests ContactRequest[] @relation("ReceivedRequests")
   chatRooms        ChatRoom[]       @relation("RoomParticipants")
   message          Message[]
+  settings         UserSettings[]
 }
 
 model Account {
@@ -238,4 +239,15 @@ model Message {
   sender   User     @relation(fields: [senderId], references: [id])
   roomId   String
   room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+  id              String  @id @default(cuid())
+  profanityFilter Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
