@@ -121,4 +121,24 @@ export const userRouter = router({
 
       return settings;
     }),
+
+  updateSettings: authedProcedure
+    .input(
+      z
+        .object({
+          profanityFilter: z.boolean(),
+        })
+        .partial(),
+    )
+    .output(z.void())
+    .mutation(async ({ ctx: { session }, input }) => {
+      await db.userSettings.update({
+        where: {
+          userId: session.user.id,
+        },
+        data: {
+          profanityFilter: input.profanityFilter,
+        },
+      });
+    }),
 });
