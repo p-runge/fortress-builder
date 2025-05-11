@@ -99,4 +99,26 @@ export const userRouter = router({
         },
       });
     }),
+
+  getSettings: authedProcedure
+    .output(z.object({ profanityFilter: z.boolean() }))
+    .query(async ({ ctx: { session } }) => {
+      const settings = await db.userSettings.findUnique({
+        where: {
+          userId: session.user.id,
+        },
+        select: {
+          profanityFilter: true,
+        },
+      });
+
+      if (!settings) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User settings not found",
+        });
+      }
+
+      return settings;
+    }),
 });
