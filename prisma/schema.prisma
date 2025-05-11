@@ -31,7 +31,7 @@ model User {
   receivedRequests ContactRequest[] @relation("ReceivedRequests")
   chatRooms        ChatRoom[]       @relation("RoomParticipants")
   message          Message[]
-  settings         UserSettings[]
+  settings         UserSettings?
 }
 
 model Account {
@@ -248,6 +248,6 @@ model UserSettings {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt()
 
-  userId String
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
