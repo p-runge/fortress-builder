@@ -30,6 +30,7 @@
     "@trpc/react-query": "^11.1.0",
     "@trpc/server": "^11.1.1",
     "@types/three": "^0.176.0",
+    "bad-words": "^4.0.0",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
