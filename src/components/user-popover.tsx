@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/popover";
 import { auth } from "~/server/auth";
 import { SignOutButton } from "./auth-buttons";
-import { Button } from "./ui/button";
+import { SettingsDialog } from "./settings-dialog";
 import { Separator } from "./ui/separator";
 
 export default async function UserPopover() {
@@ -33,9 +33,7 @@ export default async function UserPopover() {
         <ul className="grid">
           <li>
             {/* TODO: add user settings dialog */}
-            <Button variant="ghost" className="rounded-none">
-              Settings
-            </Button>
+            <SettingsDialog />
           </li>
           <li>
             <Separator />
