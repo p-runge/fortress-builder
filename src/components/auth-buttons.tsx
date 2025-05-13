@@ -54,12 +54,13 @@ export function SignOutButton() {
   const session = useSession();
   return (
     <Button
-      variant="destructive"
+      variant="ghost"
       onClick={() => {
         if (session.status === "authenticated") {
           signOut();
         }
       }}
+      className="rounded-none"
     >
       Sign out
     </Button>
