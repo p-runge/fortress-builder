@@ -75,12 +75,10 @@ function UserSettingsDialogContent({
   }
 
   return (
-    <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
+    <DialogContent className="max-w-[600px]">
       <DialogHeader>
         <DialogTitle>Settings</DialogTitle>
-        <DialogDescription>
-          These settings have global effect on the app.
-        </DialogDescription>
+        <DialogDescription />
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
