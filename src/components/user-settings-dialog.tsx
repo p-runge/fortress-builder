@@ -29,6 +29,20 @@ import {
 
 export default function UserSettingsDialog() {
   const { data: settings } = api.user.getSettings.useQuery();
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" className="rounded-none">
+          Settings
+        </Button>
+      </DialogTrigger>
+      {settings && <UserSettingsDialogContent settings={settings} />}
+    </Dialog>
+  );
+}
+
+function UserSettingsDialogContent({ settings }: { settings: UserSettings }) {
   const { mutateAsync: updateSettings } = api.user.updateSettings.useMutation();
 
   const form = useForm<UserSettings>({
@@ -47,49 +61,42 @@ export default function UserSettingsDialog() {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="rounded-none">
-          Settings
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            These settings have global effect on the app.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-2 gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="profanityFilter"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Profanity Filter</FormLabel>
-                      <FormDescription>
-                        Censor profanity in chat messages.
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
+      <DialogHeader>
+        <DialogTitle>Settings</DialogTitle>
+        <DialogDescription>
+          These settings have global effect on the app.
+        </DialogDescription>
+      </DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <FormField
+              control={form.control}
+              name="profanityFilter"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Profanity Filter</FormLabel>
+                    <FormDescription>
+                      Censor profanity in chat messages.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </form>
+      </Form>
+    </DialogContent>
   );
 }
