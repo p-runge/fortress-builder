@@ -39,16 +39,12 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
   const allBuildingTypes = Object.values(BuildingType);
 
   const buildableBuildingTypes = allBuildingTypes.filter((buildingType) => {
-    // Check how many buildings are built of this type
     const builtCount =
       fields?.filter((field) => field.building?.type === buildingType).length ??
       0;
-    // Check if amount of built building exceeds limit of Metrics
     const limit = BuildingMetric[buildingType].limit;
     return builtCount < limit;
   });
-
-  // `${builtCount}/${limit}` -> im Rendering
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
