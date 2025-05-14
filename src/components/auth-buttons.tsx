@@ -60,7 +60,6 @@ export function SignOutButton() {
           signOut();
         }
       }}
-      className="rounded-none"
     >
       Sign out
     </Button>
