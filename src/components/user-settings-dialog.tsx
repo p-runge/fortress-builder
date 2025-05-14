@@ -36,9 +36,11 @@ export default function UserSettingsDialog() {
     defaultValues: settings,
   });
 
+  const apiUtils = api.useUtils();
   async function onSubmit(data: UserSettings) {
     await updateSettings(data, {
       onSuccess: () => {
+        apiUtils.user.getSettings.invalidate();
         form.reset(data);
       },
     });
