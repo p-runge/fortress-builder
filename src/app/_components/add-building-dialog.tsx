@@ -34,6 +34,18 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
     },
   });
 
+  const { data: fields } = api.fortress.getAllFields.useQuery();
+
+  const allBuildingTypes = Object.values(BuildingType);
+
+  const buildableBuildingTypes = allBuildingTypes.filter((buildingType) => {
+    const builtCount =
+      fields?.filter((field) => field.building?.type === buildingType).length ??
+      0;
+    const limit = BuildingMetric[buildingType].limit;
+    return builtCount < limit;
+  });
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -64,7 +76,7 @@ export default function AddBuildingDialog({ field, onClose }: Props) {
               <Button
                 variant="outline"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || !buildableBuildingTypes.includes(type)}
                 onClick={async () => {
                   setIsLoading(true);
                   try {
