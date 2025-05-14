@@ -15,11 +15,22 @@ export const userRouter = router({
     .query(async ({ ctx: { session } }) => {
       return db.user.findMany({
         where: {
-          contacts: {
-            some: {
-              id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: session.user.id,
+                },
+              },
             },
-          },
+            {
+              contactOf: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+          ],
         },
         select: {
           id: true,
@@ -85,6 +96,48 @@ export const userRouter = router({
               id: user.id,
             },
           },
+        },
+      });
+    }),
+
+  getSettings: authedProcedure
+    .output(z.object({ profanityFilter: z.boolean() }))
+    .query(async ({ ctx: { session } }) => {
+      const settings = await db.userSettings.findUnique({
+        where: {
+          userId: session.user.id,
+        },
+        select: {
+          profanityFilter: true,
+        },
+      });
+
+      if (!settings) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User settings not found",
+        });
+      }
+
+      return settings;
+    }),
+
+  updateSettings: authedProcedure
+    .input(
+      z
+        .object({
+          profanityFilter: z.boolean(),
+        })
+        .partial(),
+    )
+    .output(z.void())
+    .mutation(async ({ ctx: { session }, input }) => {
+      await db.userSettings.update({
+        where: {
+          userId: session.user.id,
+        },
+        data: {
+          profanityFilter: input.profanityFilter,
         },
       });
     }),

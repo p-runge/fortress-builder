@@ -107,12 +107,151 @@ export const chatRouter = router({
       return chatRoom;
     }),
 
+  getPrivateChatRoomWithUser: authedProcedure
+    .input(z.object({ userId: z.string().cuid() }))
+    .output(ChatRoomSchema)
+    .query(async ({ input, ctx: { session } }) => {
+      // check if the user exists
+      const user = await db.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // check if users are contacts
+      const isContact = await db.user.findFirst({
+        where: {
+          id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: input.userId,
+                },
+              },
+            },
+            {
+              contactOf: {
+                some: {
+                  id: input.userId,
+                },
+              },
+            },
+          ],
+        },
+      });
+      if (!isContact) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You can only chat with your contacts",
+        });
+      }
+
+      let chatRoom = await db.chatRoom.findFirst({
+        where: {
+          // only get direct messages between 2 users
+          isPublic: false,
+          name: null,
+          // only get chat rooms where the 2 users are the only participants
+          participants: {
+            none: {
+              id: {
+                not: {
+                  in: [session.user.id, input.userId],
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              sender: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 25,
+          },
+        },
+      });
+
+      if (!chatRoom) {
+        chatRoom = await db.chatRoom.create({
+          data: {
+            name: null,
+            isPublic: false,
+            participants: {
+              connect: [{ id: session.user.id }, { id: input.userId }],
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            isPublic: true,
+            participants: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+            messages: {
+              select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 25,
+            },
+          },
+        });
+      }
+
+      return chatRoom;
+    }),
+
   sendMessageToChatRoom: authedProcedure
-    .input(z.object({ name: z.string(), message: z.string() }))
+    .input(z.object({ id: z.string(), message: z.string() }))
     .output(z.void())
     .mutation(async ({ input, ctx: { session } }) => {
       const chatRoom = await db.chatRoom.findUnique({
-        where: { name: input.name },
+        where: { id: input.id },
         select: {
           id: true,
           isPublic: true,
@@ -122,7 +261,7 @@ export const chatRouter = router({
       if (!chatRoom) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "",
+          message: "Chat room not found",
         });
       }
 
@@ -137,7 +276,7 @@ export const chatRouter = router({
       }
 
       await db.chatRoom.update({
-        where: { name: input.name },
+        where: { id: input.id },
         data: {
           messages: {
             create: {
@@ -147,74 +286,6 @@ export const chatRouter = router({
           },
         },
       });
-    }),
-
-  sendDirectMessageToUser: authedProcedure
-    .input(z.object({ contactUserId: z.string().cuid(), message: z.string() }))
-    .output(z.void())
-    .mutation(async ({ ctx: { session }, input }) => {
-      if (input.contactUserId === session.user.id) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You cannot send a message to yourself",
-        });
-      }
-
-      // check if the user exists
-      const user = await db.user.findUnique({
-        where: {
-          id: input.contactUserId,
-        },
-      });
-      if (!user) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User not found",
-        });
-      }
-
-      // create chat room if it doesn't exist, and add the message
-      const chatRoom = await db.chatRoom.findFirst({
-        where: {
-          participants: {
-            every: {
-              id: {
-                in: [session.user.id, input.contactUserId],
-              },
-            },
-          },
-        },
-      });
-
-      if (!chatRoom) {
-        await db.chatRoom.create({
-          data: {
-            participants: {
-              connect: [{ id: session.user.id }, { id: input.contactUserId }],
-            },
-            messages: {
-              create: {
-                senderId: session.user.id,
-                content: input.message,
-              },
-            },
-          },
-        });
-      } else {
-        await db.chatRoom.update({
-          where: {
-            id: chatRoom.id,
-          },
-          data: {
-            messages: {
-              create: {
-                senderId: session.user.id,
-                content: input.message,
-              },
-            },
-          },
-        });
-      }
     }),
 
   createChatRoom: authedProcedure

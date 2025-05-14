@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 import { ChatRoom } from "~/server/api/routers/chat";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { profanityFilter } from "~/server/chat/profanity";
 
 type Props = {
   room: ChatRoom;
@@ -20,6 +21,7 @@ export default function Chat({ room }: Props) {
   }
 
   const { data: session } = useSession();
+  const { data: userSettings } = api.user.getSettings.useQuery();
 
   const locale = getLocale();
 
@@ -44,7 +46,7 @@ export default function Chat({ room }: Props) {
       if (room.name) {
         const target = formEvent.currentTarget;
         sendMessage({
-          name: room.name,
+          id: room.id,
           message,
         }).then(() => {
           apiUtils.chat.getChatRoomByName.invalidate();
@@ -53,6 +55,10 @@ export default function Chat({ room }: Props) {
       }
     }
   };
+
+  if (!userSettings) {
+    return null;
+  }
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -81,7 +87,11 @@ export default function Chat({ room }: Props) {
                   }).format(new Date(message.createdAt))}
                 </div>
               </div>
-              <span>{message.content}</span>
+              <span>
+                {userSettings.profanityFilter
+                  ? profanityFilter.clean(message.content)
+                  : message.content}
+              </span>
             </div>
           );
         })}

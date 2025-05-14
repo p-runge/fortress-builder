@@ -48,6 +48,34 @@ export const contactRequestRouter = router({
         });
       }
 
+      const isAlreadyContact = !!(await db.user.findFirst({
+        where: {
+          id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: user.id,
+                },
+              },
+            },
+            {
+              contactOf: {
+                some: {
+                  id: user.id,
+                },
+              },
+            },
+          ],
+        },
+      }));
+      if (isAlreadyContact) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "User is already a contact",
+        });
+      }
+
       const existingRequest = await db.contactRequest.findFirst({
         where: {
           fromId: session.user.id,
@@ -109,6 +137,34 @@ export const contactRequestRouter = router({
         throw new TRPCError({
           code: "UNPROCESSABLE_CONTENT",
           message: "Contact request cannot be accepted",
+        });
+      }
+
+      const isAlreadyContact = !!(await db.user.findFirst({
+        where: {
+          id: session.user.id,
+          OR: [
+            {
+              contacts: {
+                some: {
+                  id: contactRequest.fromId,
+                },
+              },
+            },
+            {
+              contactOf: {
+                some: {
+                  id: contactRequest.fromId,
+                },
+              },
+            },
+          ],
+        },
+      }));
+      if (isAlreadyContact) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "User is already a contact",
         });
       }
 
