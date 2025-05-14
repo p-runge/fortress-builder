@@ -26,23 +26,37 @@ import {
   FormItem,
   FormLabel,
 } from "./ui/form";
+import { useState } from "react";
 
 export default function UserSettingsDialog() {
   const { data: settings } = api.user.getSettings.useQuery();
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="rounded-none">
           Settings
         </Button>
       </DialogTrigger>
-      {settings && <UserSettingsDialogContent settings={settings} />}
+      {settings && (
+        <UserSettingsDialogContent
+          settings={settings}
+          onSubmit={() => setIsOpen(false)}
+        />
+      )}
     </Dialog>
   );
 }
 
-function UserSettingsDialogContent({ settings }: { settings: UserSettings }) {
+function UserSettingsDialogContent({
+  settings,
+  onSubmit: onSubmitProp,
+}: {
+  settings: UserSettings;
+  onSubmit: () => void;
+}) {
   const { mutateAsync: updateSettings } = api.user.updateSettings.useMutation();
 
   const form = useForm<UserSettings>({
@@ -55,7 +69,7 @@ function UserSettingsDialogContent({ settings }: { settings: UserSettings }) {
     await updateSettings(data, {
       onSuccess: () => {
         apiUtils.user.getSettings.invalidate();
-        form.reset(data);
+        onSubmitProp();
       },
     });
   }
