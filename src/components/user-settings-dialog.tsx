@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import {
   UserSettings,
@@ -26,24 +25,22 @@ import {
   FormItem,
   FormLabel,
 } from "./ui/form";
-import { useState } from "react";
 
-export default function UserSettingsDialog() {
+export default function UserSettingsDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { data: settings } = api.user.getSettings.useQuery();
 
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="rounded-none">
-          Settings
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={() => onOpenChange(false)}>
       {settings && (
         <UserSettingsDialogContent
           settings={settings}
-          onSubmit={() => setIsOpen(false)}
+          onSubmit={() => onOpenChange(false)}
         />
       )}
     </Dialog>
