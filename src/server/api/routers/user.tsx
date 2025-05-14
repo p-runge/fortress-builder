@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { authedProcedure, router } from "../trpc";
+import { UserSettingsSchema } from "~/server/models/user-settings";
 
 const UserSchema = z.object({
   id: z.string().cuid(),
@@ -101,7 +102,7 @@ export const userRouter = router({
     }),
 
   getSettings: authedProcedure
-    .output(z.object({ profanityFilter: z.boolean() }))
+    .output(UserSettingsSchema)
     .query(async ({ ctx: { session } }) => {
       const settings = await db.userSettings.findUnique({
         where: {
@@ -123,13 +124,7 @@ export const userRouter = router({
     }),
 
   updateSettings: authedProcedure
-    .input(
-      z
-        .object({
-          profanityFilter: z.boolean(),
-        })
-        .partial(),
-    )
+    .input(UserSettingsSchema.partial())
     .output(z.void())
     .mutation(async ({ ctx: { session }, input }) => {
       await db.userSettings.update({
