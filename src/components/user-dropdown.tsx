@@ -14,7 +14,7 @@ import {
 } from "./ui/dropdown-menu";
 import UserSettingsDialog from "./user-settings-dialog";
 
-export default function UserPopover() {
+export default function UserDropdown() {
   const { data: session } = useSession();
 
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);

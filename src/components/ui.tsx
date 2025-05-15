@@ -14,7 +14,7 @@ import GlobalChatDialog from "./global-chat-dialog";
 import InventoryDialog from "./inventory-dialog";
 import RealMoneyShopDialog from "./real-money-shop-dialog";
 import ShopDialog from "./shop-dialog";
-import UserPopover from "./user-dropdown";
+import UserDropdown from "./user-dropdown";
 
 export default async function UI({ children }: { children: React.ReactNode }) {
   const locale = getLocale();
@@ -62,7 +62,7 @@ export default async function UI({ children }: { children: React.ReactNode }) {
             />
 
             {/* user info */}
-            <UserPopover />
+            <UserDropdown />
           </div>
         </div>
 
