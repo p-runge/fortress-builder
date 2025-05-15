@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import UserSettingsDialog from "./user-settings-dialog";
+import { Skeleton } from "./ui/skeleton";
 
 export default function UserDropdown() {
   const { data: session } = useSession();
@@ -20,7 +21,7 @@ export default function UserDropdown() {
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   if (!session?.user) {
-    return null;
+    return <LoadingState />;
   }
 
   return (
@@ -35,7 +36,7 @@ export default function UserDropdown() {
               width={32}
               height={32}
             />
-            <span>{session.user.name}</span>
+            <span className="w-24 truncate">{session.user.name}</span>
             <FontAwesomeIcon icon={faChevronDown} className="h-4 w-4" />
           </div>
         </DropdownMenuTrigger>
@@ -63,5 +64,15 @@ export default function UserDropdown() {
         onOpenChange={setSettingsDialogOpen}
       />
     </>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="flex items-center gap-2">
+      <Skeleton className="h-8 w-8 rounded-full" />
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-4 w-4" />
+    </div>
   );
 }
