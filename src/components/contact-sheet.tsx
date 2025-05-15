@@ -34,37 +34,37 @@ export default function ContactSheet() {
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <div className="flex justify-between px-4">
-            <SheetTitle>Contact List</SheetTitle>
+          <div className="flex justify-between px-4 pr-8">
+            <SheetTitle className="text-2xl">Contact List</SheetTitle>
             <ContactDialog />
           </div>
           <div>
             {contactList?.map((contact) => {
               return (
-                <div
-                  key={contact.id}
-                  className="flex items-center justify-between gap-x-2"
-                >
+                <div key={contact.id} className="flex items-center gap-x-2">
                   {contact.image ? (
                     <Image
                       alt="Discord User Profile Picture"
                       src={contact.image}
-                      width={40}
-                      height={40}
+                      width={60}
+                      height={60}
                       className="rounded-full"
                     ></Image>
                   ) : (
                     <Image
                       alt="Default User Profile Picture"
                       src="/default-profile-pic.png"
-                      width={40}
-                      height={40}
+                      width={60}
+                      height={60}
                       className="rounded-full"
                     ></Image>
                   )}
-                  <div>{contact.name}</div>
+                  <div title={contact.name} className="grow truncate text-xl">
+                    {contact.name}
+                  </div>
                   {/* TODO: Check if removing user is working as soon as the Backend got fixed */}
                   <Button
+                    size="lg"
                     onClick={() => {
                       removeContact({ userId: contact.id });
                     }}
