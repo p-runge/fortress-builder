@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/api/client";
+import ItemImage from "~/components/item-image";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
 import { Button } from "./ui/button";
-import ItemImage from "~/components/item-image";
+import { Skeleton } from "./ui/skeleton";
 
 export default function ShopDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,9 +57,7 @@ export default function ShopDialog() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             {isLoadingItems ? (
-              <div className="flex items-center justify-center">
-                <p className="text-gray-500">Loading...</p>
-              </div>
+              <LoadingState />
             ) : items && items.length > 0 ? (
               items.map((item) => (
                 <div
@@ -102,4 +101,19 @@ export default function ShopDialog() {
       )}
     </Dialog>
   );
+}
+
+function LoadingState() {
+  return Array.from({ length: 3 }).map((_, index) => (
+    <div
+      key={index}
+      className="flex items-center justify-between gap-4 rounded-lg border p-4 shadow-sm"
+    >
+      <Skeleton className="h-24 w-24" />
+      <div className="grow">
+        <Skeleton className="h-4 w-12" />
+      </div>
+      <Skeleton className="h-10 w-16" />
+    </div>
+  ));
 }

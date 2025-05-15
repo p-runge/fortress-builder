@@ -44,8 +44,8 @@ export default function ItemImage({ itemType }: { itemType: ItemType }) {
     <div className="relative mr-4 h-24 w-24">
       <div className="absolute inset-0">
         <Image
-          width={220}
-          height={220}
+          width={96}
+          height={96}
           src={`/resource-images/${src}.png`}
           alt={alt!}
         />
