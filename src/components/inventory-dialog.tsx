@@ -16,6 +16,7 @@ import {
 import { getLocale } from "~/i18n";
 import { Button } from "./ui/button";
 import ItemImage from "~/components/item-image";
+import { Skeleton } from "./ui/skeleton";
 
 export default function InventoryDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,9 +51,7 @@ export default function InventoryDialog() {
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 py-4">
           {isLoadingItems ? (
-            <div className="flex items-center justify-center">
-              <p className="text-gray-500">Loading...</p>
-            </div>
+            <LoadingState />
           ) : items && items.length > 0 ? (
             items.map((item) => (
               <div
@@ -92,4 +91,19 @@ export default function InventoryDialog() {
       </DialogContent>
     </Dialog>
   );
+}
+
+function LoadingState() {
+  return Array.from({ length: 3 }).map((_, index) => (
+    <div
+      key={index}
+      className="flex items-center justify-between gap-4 rounded-lg border p-4 shadow-sm"
+    >
+      <Skeleton className="h-24 w-24" />
+      <div className="grow">
+        <Skeleton className="h-4 w-12" />
+      </div>
+      <Skeleton className="h-10 w-24" />
+    </div>
+  ));
 }
