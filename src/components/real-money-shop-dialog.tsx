@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/dialog";
 import { getLocale } from "~/i18n";
 import { Button } from "./ui/button";
+import { Skeleton } from "./ui/skeleton";
 
 export default function RealMoneyShopDialog({
   trigger,
@@ -39,9 +40,7 @@ export default function RealMoneyShopDialog({
         </DialogHeader>
         <div className="grid grid-cols-3 gap-4 py-4">
           {isLoadingItems ? (
-            <div className="flex items-center justify-center">
-              <p className="text-gray-500">Loading...</p>
-            </div>
+            <LoadingState />
           ) : gemPackages && gemPackages.length > 0 ? (
             gemPackages.map((gemPackage) => (
               <div
@@ -83,4 +82,17 @@ export default function RealMoneyShopDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+function LoadingState() {
+  return Array.from({ length: 5 }).map((_, index) => (
+    <div
+      key={index}
+      className="flex flex-col items-center justify-center rounded-lg border p-4"
+    >
+      <Skeleton className="h-8 w-32 rounded-lg" />
+      <Skeleton className="mt-2 h-6 w-24 rounded-lg" />
+      <Skeleton className="mt-2 h-10 w-20 rounded-lg" />
+    </div>
+  ));
 }
