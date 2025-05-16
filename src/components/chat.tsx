@@ -3,7 +3,7 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
-import { FormEventHandler, useEffect, useRef } from "react";
+import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { api } from "~/api/client";
 import { getLocale } from "~/i18n";
 import { cn } from "~/lib/utils";
@@ -19,6 +19,24 @@ export default function Chat({ room }: Props) {
   if (!room.name) {
     console.error("Chat room name is not defined");
   }
+
+  const [messages, setMessages] = useState(room.messages);
+  useEffect(() => {
+    setMessages(room.messages);
+  }, [room.messages]);
+
+  api.chat.subscribeToChatRoom.useSubscription(
+    {
+      id: room.id,
+    },
+    {
+      onData: ({ message }) => {
+        if (message) {
+          setMessages((prevMessages) => [...prevMessages, message]);
+        }
+      },
+    },
+  );
 
   const { data: session } = useSession();
   const { data: userSettings } = api.user.getSettings.useQuery();
@@ -66,7 +84,7 @@ export default function Chat({ room }: Props) {
         ref={messagesWrapperRef}
         className="flex h-0 grow flex-col gap-y-2 overflow-y-auto rounded-lg border-4 p-2"
       >
-        {room.messages.map((message, index) => {
+        {messages.map((message, index) => {
           return (
             <div
               key={index}
