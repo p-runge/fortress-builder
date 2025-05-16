@@ -23,7 +23,6 @@ export default function Fortress() {
           <FortressSkeleton />
         ) : (
           fields?.map((field) => {
-            // @ts-expect-error date props within building are incorrectly inferred by Zod
             return <FortressField key={field.id} field={field} />;
           })
         )}

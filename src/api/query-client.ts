@@ -4,7 +4,7 @@ import {
 } from "@tanstack/react-query";
 import { TRPCClientError } from "@trpc/client";
 import { toast } from "sonner";
-// import superjson from "superjson";
+import superjson from "superjson";
 
 export function makeQueryClient() {
   return new QueryClient({
@@ -20,13 +20,13 @@ export function makeQueryClient() {
         },
       },
       dehydrate: {
-        // serializeData: superjson.serialize,
+        serializeData: superjson.serialize,
         shouldDehydrateQuery: (query) =>
           defaultShouldDehydrateQuery(query) ||
           query.state.status === "pending",
       },
       hydrate: {
-        // deserializeData: superjson.deserialize,
+        deserializeData: superjson.deserialize,
       },
     },
   });
