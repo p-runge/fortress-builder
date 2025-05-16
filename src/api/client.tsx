@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { AppRouter } from "~/server/api/router";
 import { makeQueryClient } from "./query-client";
 import { env } from "~/env";
+import superjson from "superjson";
 
 export const api = createTRPCReact<AppRouter>();
 
@@ -48,15 +49,15 @@ export function TRPCProvider(
           condition: (op) => op.type === "subscription",
           true: httpSubscriptionLink({
             url: `/api/trpc`,
-            // transformer: superjson,
+            transformer: superjson,
           }),
           false: httpBatchLink({
             url: `/api/trpc`,
-            // transformer: superjson,
+            transformer: superjson,
           }),
         }),
         httpBatchLink({
-          // transformer: superjson, <-- if you use a data transformer
+          transformer: superjson,
           url: getUrl(),
         }),
       ],

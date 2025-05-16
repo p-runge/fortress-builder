@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "../db";
 import { env } from "~/env";
 import { ensureUserHasFortress } from "../db/relational-integrity";
+import superjson from "superjson";
 
 const SessionSchema = z
   .object({
@@ -78,7 +79,9 @@ export const createTRPCContext = cache(async () => {
  * Initialization of tRPC backend
  * Should be done only once per backend!
  */
-const t = initTRPC.context<typeof createTRPCContext>().create();
+const t = initTRPC.context<typeof createTRPCContext>().create({
+  transformer: superjson,
+});
 /**
  * Export reusable router and procedure helpers
  * that can be used throughout the router

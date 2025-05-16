@@ -43,12 +43,7 @@ export default function GlobalChatDialog() {
               your friends and other people!
             </SheetDescription>
           </SheetHeader>
-
-          {/*
-             // TODO: fix serializing of Date objects 
-          */}
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <Chat room={room as any} />
+          <Chat room={room} />
         </SheetContent>
       )}
     </Sheet>
