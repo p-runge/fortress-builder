@@ -2,6 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { authedProcedure, router } from "../trpc";
+import { eventEmitter } from "~/server/jobs/event-emitter";
+import { on } from "stream";
 
 export const ChatRoomSchema = z.object({
   id: z.string().cuid(),
@@ -246,6 +248,78 @@ export const chatRouter = router({
       return chatRoom;
     }),
 
+  subscribeToChatRoom: authedProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .subscription(async function* ({ input, ctx: { session }, signal }) {
+      const chatRoom = await db.chatRoom.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          isPublic: true,
+          participants: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!chatRoom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chat room not found",
+        });
+      }
+
+      const isParticipant = chatRoom.participants.some(
+        (user) => user.id === session.user.id,
+      );
+      if (!isParticipant) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not a participant of this chat room",
+        });
+      }
+
+      while (true) {
+        console.log("Waiting for incoming chat message...");
+        // listen for new events
+        const iterator = on(
+          eventEmitter,
+          `send-message-in-chat-room-${chatRoom.id}`,
+          {
+            signal,
+          },
+        );
+        try {
+          for await (const iteration of iterator) {
+            console.log(
+              `Received a new message for that room ${chatRoom.id}, iteration:`,
+              iteration,
+            );
+            const { message } = iteration[0] as {
+              message: {
+                id: string;
+                content: string;
+                createdAt: Date;
+                sender: {
+                  id: string;
+                  name: string;
+                  image: string | null;
+                };
+              };
+            };
+
+            yield {
+              message,
+            };
+          }
+        } catch (error) {
+          console.error("Error in building upgrade subscription:", error);
+          break;
+        }
+      }
+    }),
+
   sendMessageToChatRoom: authedProcedure
     .input(z.object({ id: z.string(), message: z.string() }))
     .output(z.void())
@@ -275,14 +349,24 @@ export const chatRouter = router({
         });
       }
 
-      await db.chatRoom.update({
-        where: { id: input.id },
+      const newMessage = await db.message.create({
         data: {
-          messages: {
-            create: {
-              senderId: session.user.id,
-              content: input.message,
-            },
+          content: input.message,
+          roomId: chatRoom.id,
+          senderId: session.user.id,
+        },
+      });
+
+      // emit the event to all participants of the chat room
+      eventEmitter.emit(`send-message-in-chat-room-${chatRoom.id}`, {
+        message: {
+          id: newMessage.id,
+          content: input.message,
+          createdAt: newMessage.createdAt,
+          sender: {
+            id: session.user.id,
+            name: session.user.name,
+            image: session.user.image,
           },
         },
       });
