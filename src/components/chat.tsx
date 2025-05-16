@@ -62,13 +62,12 @@ export default function Chat({ room }: Props) {
     const message = formEvent.currentTarget.message.value;
     if (message.length > 0) {
       if (room.name) {
-        const target = formEvent.currentTarget;
+        formEvent.currentTarget.reset();
         sendMessage({
           id: room.id,
           message,
         }).then(() => {
           apiUtils.chat.getChatRoomByName.invalidate();
-          target.reset();
         });
       }
     }
