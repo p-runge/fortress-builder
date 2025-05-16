@@ -67,7 +67,11 @@ export default function Chat({ room }: Props) {
           id: room.id,
           message,
         }).then(() => {
-          apiUtils.chat.getChatRoomByName.invalidate();
+          if (room.name) {
+            apiUtils.chat.getChatRoomByName.invalidate({
+              name: room.name,
+            });
+          }
         });
       }
     }
