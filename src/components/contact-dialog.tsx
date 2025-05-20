@@ -13,6 +13,15 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { api } from "~/api/client";
 import Image from "next/image";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem } from "./ui/form";
+
+const UserSearchSchema = z.object({
+  username: z.string(),
+});
+type UserSearch = z.infer<typeof UserSearchSchema>;
 
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
@@ -24,14 +33,21 @@ export default function ContactDialog() {
     { enabled: false },
   );
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await refetchUser();
-    } catch (error) {
-      console.error("Search failed", error);
-    }
-  };
+  // const submit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     await refetchUser();
+  //   } catch (error) {
+  //     console.error("Search failed", error);
+  //   }
+  // };
+
+  async function onSubmit(data: UserSearch) {}
+
+  const form = useForm<UserSearch>({
+    resolver: zodResolver(UserSearchSchema),
+    defaultValues: { username: "" },
+  });
 
   return (
     <Dialog>
@@ -42,14 +58,28 @@ export default function ContactDialog() {
         <DialogTitle>Add new Contact</DialogTitle>
         <div>
           <div className="flex gap-x-2">
-            <form onSubmit={submit} className="flex gap-x-2">
-              <Input
-                placeholder="Search for a user..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              />
-              <Button type="submit">Search</Button>
-            </form>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Search for a user..."
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit">Search</Button>
+                </div>
+              </form>
+            </Form>
           </div>
           {userList && userList.length > 0 && (
             <div>
