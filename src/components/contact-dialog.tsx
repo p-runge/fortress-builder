@@ -38,6 +38,7 @@ export default function ContactDialog() {
     { name: formState.username },
     { enabled: false },
   );
+  const { mutateAsync: addUser } = api.contactRequest.create.useMutation();
 
   async function onSubmit() {
     await refetchUser();
@@ -101,7 +102,14 @@ export default function ContactDialog() {
                       />
                     )}
                     <div className="flex-1">{user.name}</div>
-                    <Button disabled={alreadyContact}>Add</Button>
+                    <Button
+                      disabled={alreadyContact}
+                      onClick={() => {
+                        addUser({ userId: user.id });
+                      }}
+                    >
+                      Add
+                    </Button>
                   </div>
                 );
               })}
