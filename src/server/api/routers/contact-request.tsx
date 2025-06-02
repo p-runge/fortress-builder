@@ -5,15 +5,36 @@ import { RequestStatus } from "~/server/db/client";
 import { authedProcedure, router } from "../trpc";
 
 export const contactRequestRouter = router({
-  getPendingList: authedProcedure.query(async ({ ctx: { session } }) => {
+  getPendingReceivedList: authedProcedure.query(
+    async ({ ctx: { session } }) => {
+      return db.contactRequest.findMany({
+        where: {
+          toId: session.user.id,
+          status: RequestStatus.PENDING,
+        },
+        select: {
+          id: true,
+          from: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      });
+    },
+  ),
+
+  getPendingSentList: authedProcedure.query(async ({ ctx: { session } }) => {
     return db.contactRequest.findMany({
       where: {
-        toId: session.user.id,
+        fromId: session.user.id,
         status: RequestStatus.PENDING,
       },
       select: {
         id: true,
-        from: {
+        to: {
           select: {
             id: true,
             name: true,
