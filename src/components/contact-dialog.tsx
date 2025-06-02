@@ -25,6 +25,7 @@ type UserSearch = z.infer<typeof UserSearchSchema>;
 
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const form = useForm<UserSearch>({
     resolver: zodResolver(UserSearchSchema),
@@ -41,7 +42,9 @@ export default function ContactDialog() {
   const { mutateAsync: addUser } = api.contactRequest.create.useMutation();
 
   async function onSubmit() {
+    setIsSearching(true);
     await refetchUser();
+    setIsSearching(false);
   }
 
   return (
@@ -71,7 +74,9 @@ export default function ContactDialog() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">Search</Button>
+                  <Button type="submit" disabled={isSearching}>
+                    {isSearching ? "Searching..." : "Search"}
+                  </Button>
                 </div>
               </form>
             </Form>
