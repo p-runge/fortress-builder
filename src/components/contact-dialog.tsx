@@ -25,29 +25,23 @@ type UserSearch = z.infer<typeof UserSearchSchema>;
 
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-
-  // const { data: contactList } = api.user.getContactList.useQuery(); //if user is already a friend, send request button will be disabled
-  const { data: userList, refetch: refetchUser } = api.user.search.useQuery(
-    { name: inputValue },
-    { enabled: false },
-  );
-
-  // const submit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     await refetchUser();
-  //   } catch (error) {
-  //     console.error("Search failed", error);
-  //   }
-  // };
-
-  async function onSubmit(data: UserSearch) {}
 
   const form = useForm<UserSearch>({
     resolver: zodResolver(UserSearchSchema),
     defaultValues: { username: "" },
   });
+
+  const formState = form.watch();
+
+  const { data: contactList } = api.user.getContactList.useQuery();
+  const { data: userList, refetch: refetchUser } = api.user.search.useQuery(
+    { name: formState.username },
+    { enabled: false },
+  );
+
+  async function onSubmit() {
+    await refetchUser();
+  }
 
   return (
     <Dialog>
@@ -59,13 +53,13 @@ export default function ContactDialog() {
         <div>
           <div className="flex gap-x-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="grow">
+                <div className="flex gap-x-2">
                   <FormField
                     control={form.control}
                     name="username"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="grow">
                         <FormControl>
                           <Input
                             placeholder="Search for a user..."
@@ -84,8 +78,11 @@ export default function ContactDialog() {
           {userList && userList.length > 0 && (
             <div>
               {userList.map((user) => {
+                const alreadyContact =
+                  contactList?.some((contact) => contact.id === user.id) ??
+                  false;
                 return (
-                  <div key={user.id} className="flex">
+                  <div key={user.id} className="flex items-center gap-x-2 py-2">
                     {user.image ? (
                       <Image
                         alt="Discord User Profile Picture"
@@ -93,7 +90,7 @@ export default function ContactDialog() {
                         width={60}
                         height={60}
                         className="rounded-full"
-                      ></Image>
+                      />
                     ) : (
                       <Image
                         alt="Default User Profile Picture"
@@ -101,10 +98,10 @@ export default function ContactDialog() {
                         width={60}
                         height={60}
                         className="rounded-full"
-                      ></Image>
+                      />
                     )}
-                    <div>{user.name}</div>
-                    <Button>Add</Button>
+                    <div className="flex-1">{user.name}</div>
+                    <Button disabled={alreadyContact}>Add</Button>
                   </div>
                 );
               })}
