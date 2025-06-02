@@ -16,17 +16,17 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const utils = api.useUtils();
 
-  const { data: list } = api.contactRequest.getPendingList.useQuery();
+  const { data: list } = api.contactRequest.getPendingReceivedList.useQuery();
 
   const { mutateAsync: acceptRequest } = api.contactRequest.accept.useMutation({
     onSuccess() {
-      utils.contactRequest.getPendingList.invalidate();
+      utils.contactRequest.getPendingReceivedList.invalidate();
       utils.user.getContactList.invalidate();
     },
   });
   const { mutateAsync: rejectRequest } = api.contactRequest.reject.useMutation({
     onSuccess() {
-      utils.contactRequest.getPendingList.invalidate();
+      utils.contactRequest.getPendingReceivedList.invalidate();
     },
   });
 
