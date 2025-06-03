@@ -45,7 +45,6 @@ export default async function UI({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex cursor-pointer items-center gap-12">
-            {/* gems */}
             <RealMoneyShopDialog
               trigger={
                 <span className="group text-xl">
@@ -62,11 +61,8 @@ export default async function UI({ children }: { children: React.ReactNode }) {
                 </span>
               }
             />
-            {/* notifications */}
             <NotificationBell />
-            {/* contact list */}
             <ContactSheet />
-            {/* user info */}
             <UserDropdown />
           </div>
         </div>
@@ -96,6 +92,6 @@ const resourceIconMap: Record<ResourceType, React.ReactNode> = {
   [ResourceType.gems]: <FontAwesomeIcon icon={faGem} />,
   [ResourceType.food]: <FontAwesomeIcon icon={faFish} />,
   [ResourceType.wood]: <FontAwesomeIcon icon={faTree} />,
-  [ResourceType.stone]: <FontAwesomeIcon icon={faMountain} />, // Replacing faStone with faMountain
+  [ResourceType.stone]: <FontAwesomeIcon icon={faMountain} />,
   [ResourceType.gold]: <FontAwesomeIcon icon={faCoins} />,
 } as const;

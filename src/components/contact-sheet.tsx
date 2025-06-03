@@ -42,23 +42,15 @@ export default function ContactSheet() {
             {contactList?.map((contact) => {
               return (
                 <div key={contact.id} className="flex items-center gap-x-2">
-                  {contact.image ? (
-                    <Image
-                      alt="Discord User Profile Picture"
-                      src={contact.image}
-                      width={60}
-                      height={60}
-                      className="rounded-full"
-                    ></Image>
-                  ) : (
-                    <Image
-                      alt="Default User Profile Picture"
-                      src="/default-profile-pic.png"
-                      width={60}
-                      height={60}
-                      className="rounded-full"
-                    ></Image>
-                  )}
+                  <Image
+                    alt="User Profile Picture"
+                    src={
+                      contact.image ? contact.image : "/default-profile-pic.png"
+                    }
+                    width={60}
+                    height={60}
+                    className="rounded-full"
+                  ></Image>
                   <div title={contact.name} className="grow truncate text-xl">
                     {contact.name}
                   </div>
