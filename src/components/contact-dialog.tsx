@@ -24,55 +24,7 @@ const UserSearchSchema = z.object({
 });
 type UserSearch = z.infer<typeof UserSearchSchema>;
 
-type Props = { user: User };
-
-function UserListItem({ user }: Props) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { mutateAsync: addUser } = api.contactRequest.create.useMutation({
-    onSuccess() {
-      utils.contactRequest.getPendingSentList.invalidate();
-    },
-  });
-  const { data: pendingRequestList } =
-    api.contactRequest.getPendingSentList.useQuery();
-  const utils = api.useUtils();
-
-  const { data: contactList } = api.user.getContactList.useQuery();
-
-  const alreadyContact =
-    contactList?.some((contact) => contact.id === user.id) ?? false;
-  const isRequestPending =
-    pendingRequestList?.some((request) => request.to.id === user.id) ?? false;
-  return (
-    <div key={user.id} className="flex items-center gap-x-2 py-2">
-      <Image
-        alt="User Profile Picture"
-        src={user.image ? user.image : "/default-profile-pic.png"}
-        width={60}
-        height={60}
-        className="rounded-full"
-      />
-      <div className="flex-1 truncate" title={user.name}>
-        {user.name}
-      </div>
-      <Button
-        disabled={isLoading || alreadyContact || isRequestPending}
-        onClick={async () => {
-          setIsLoading(true);
-          await addUser({ userId: user.id });
-          setIsLoading(false);
-        }}
-      >
-        {alreadyContact
-          ? "Already Sent Request"
-          : isRequestPending
-            ? "Requested"
-            : "Add"}
-      </Button>
-    </div>
-  );
-}
+type UserListItemProps = { user: User };
 
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
@@ -140,5 +92,53 @@ export default function ContactDialog() {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function UserListItem({ user }: UserListItemProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutateAsync: addUser } = api.contactRequest.create.useMutation({
+    onSuccess() {
+      utils.contactRequest.getPendingSentList.invalidate();
+    },
+  });
+  const { data: pendingRequestList } =
+    api.contactRequest.getPendingSentList.useQuery();
+  const utils = api.useUtils();
+
+  const { data: contactList } = api.user.getContactList.useQuery();
+
+  const alreadyContact =
+    contactList?.some((contact) => contact.id === user.id) ?? false;
+  const isRequestPending =
+    pendingRequestList?.some((request) => request.to.id === user.id) ?? false;
+  return (
+    <div key={user.id} className="flex items-center gap-x-2 py-2">
+      <Image
+        alt="User Profile Picture"
+        src={user.image ? user.image : "/default-profile-pic.png"}
+        width={60}
+        height={60}
+        className="rounded-full"
+      />
+      <div className="flex-1 truncate" title={user.name}>
+        {user.name}
+      </div>
+      <Button
+        disabled={isLoading || alreadyContact || isRequestPending}
+        onClick={async () => {
+          setIsLoading(true);
+          await addUser({ userId: user.id });
+          setIsLoading(false);
+        }}
+      >
+        {alreadyContact
+          ? "Already Sent Request"
+          : isRequestPending
+            ? "Requested"
+            : "Add"}
+      </Button>
+    </div>
   );
 }
