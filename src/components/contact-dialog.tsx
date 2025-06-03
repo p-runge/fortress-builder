@@ -24,8 +24,6 @@ const UserSearchSchema = z.object({
 });
 type UserSearch = z.infer<typeof UserSearchSchema>;
 
-type UserListItemProps = { user: User };
-
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -94,6 +92,8 @@ export default function ContactDialog() {
     </Dialog>
   );
 }
+
+type UserListItemProps = { user: User };
 
 function UserListItem({ user }: UserListItemProps) {
   const [isLoading, setIsLoading] = useState(false);
