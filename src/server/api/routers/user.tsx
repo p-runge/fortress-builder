@@ -10,6 +10,8 @@ const UserSchema = z.object({
   image: z.string().nullable(),
 });
 
+export type User = z.infer<typeof UserSchema>;
+
 export const userRouter = router({
   getContactList: authedProcedure
     .output(z.array(UserSchema))

@@ -17,30 +17,18 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem } from "./ui/form";
+import { User } from "~/server/api/routers/user";
 
 const UserSearchSchema = z.object({
   username: z.string(),
 });
 type UserSearch = z.infer<typeof UserSearchSchema>;
 
-export default function ContactDialog() {
-  const [open, setOpen] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const [addingUserId, setAddingUserId] = useState<string | null>(null);
+type Props = { user: User };
 
-  const form = useForm<UserSearch>({
-    resolver: zodResolver(UserSearchSchema),
-    defaultValues: { username: "" },
-  });
+function UserListItem({ user }: Props) {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const formState = form.watch();
-  const utils = api.useUtils();
-
-  const { data: contactList } = api.user.getContactList.useQuery();
-  const { data: userList, refetch: refetchUser } = api.user.search.useQuery(
-    { name: formState.username },
-    { enabled: false },
-  );
   const { mutateAsync: addUser } = api.contactRequest.create.useMutation({
     onSuccess() {
       utils.contactRequest.getPendingSentList.invalidate();
@@ -48,6 +36,59 @@ export default function ContactDialog() {
   });
   const { data: pendingRequestList } =
     api.contactRequest.getPendingSentList.useQuery();
+  const utils = api.useUtils();
+
+  const { data: contactList } = api.user.getContactList.useQuery();
+
+  const alreadyContact =
+    contactList?.some((contact) => contact.id === user.id) ?? false;
+  const isRequestPending =
+    pendingRequestList?.some((request) => request.to.id === user.id) ?? false;
+  return (
+    <div key={user.id} className="flex items-center gap-x-2 py-2">
+      <Image
+        alt="User Profile Picture"
+        src={user.image ? user.image : "/default-profile-pic.png"}
+        width={60}
+        height={60}
+        className="rounded-full"
+      />
+      <div className="flex-1 truncate" title={user.name}>
+        {user.name}
+      </div>
+      <Button
+        disabled={isLoading || alreadyContact || isRequestPending}
+        onClick={async () => {
+          setIsLoading(true);
+          await addUser({ userId: user.id });
+          setIsLoading(false);
+        }}
+      >
+        {alreadyContact
+          ? "Already Sent Request"
+          : isRequestPending
+            ? "Requested"
+            : "Add"}
+      </Button>
+    </div>
+  );
+}
+
+export default function ContactDialog() {
+  const [open, setOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const form = useForm<UserSearch>({
+    resolver: zodResolver(UserSearchSchema),
+    defaultValues: { username: "" },
+  });
+
+  const formState = form.watch();
+
+  const { data: userList, refetch: refetchUser } = api.user.search.useQuery(
+    { name: formState.username },
+    { enabled: false },
+  );
 
   async function onSubmit() {
     setIsSearching(true);
@@ -92,55 +133,7 @@ export default function ContactDialog() {
           {userList && userList.length > 0 && (
             <div>
               {userList.map((user) => {
-                const alreadyContact =
-                  contactList?.some((contact) => contact.id === user.id) ??
-                  false;
-                const isRequestPending =
-                  pendingRequestList?.some(
-                    (request) => request.to.id === user.id,
-                  ) ?? false;
-                return (
-                  <div key={user.id} className="flex items-center gap-x-2 py-2">
-                    {user.image ? (
-                      <Image
-                        alt="Discord User Profile Picture"
-                        src={user.image}
-                        width={60}
-                        height={60}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <Image
-                        alt="Default User Profile Picture"
-                        src="/default-profile-pic.png"
-                        width={60}
-                        height={60}
-                        className="rounded-full"
-                      />
-                    )}
-                    <div className="flex-1">{user.name}</div>
-                    <Button
-                      disabled={
-                        alreadyContact ||
-                        isRequestPending ||
-                        addingUserId === user.id
-                      }
-                      onClick={async () => {
-                        setAddingUserId(user.id);
-                        await addUser({ userId: user.id });
-                        setAddingUserId(null);
-                      }}
-                    >
-                      {alreadyContact
-                        ? "Already Sent Request"
-                        : isRequestPending
-                          ? "Requested"
-                          : addingUserId === user.id
-                            ? "Sent Request"
-                            : "Add"}
-                    </Button>
-                  </div>
-                );
+                return <UserListItem key={user.id} user={user} />;
               })}
             </div>
           )}
