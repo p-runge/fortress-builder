@@ -26,6 +26,7 @@ type UserSearch = z.infer<typeof UserSearchSchema>;
 export default function ContactDialog() {
   const [open, setOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [addingUserId, setAddingUserId] = useState<string | null>(null);
 
   const form = useForm<UserSearch>({
     resolver: zodResolver(UserSearchSchema),
@@ -33,13 +34,20 @@ export default function ContactDialog() {
   });
 
   const formState = form.watch();
+  const utils = api.useUtils();
 
   const { data: contactList } = api.user.getContactList.useQuery();
   const { data: userList, refetch: refetchUser } = api.user.search.useQuery(
     { name: formState.username },
     { enabled: false },
   );
-  const { mutateAsync: addUser } = api.contactRequest.create.useMutation();
+  const { mutateAsync: addUser } = api.contactRequest.create.useMutation({
+    onSuccess() {
+      utils.contactRequest.getPendingSentList.invalidate();
+    },
+  });
+  const { data: pendingRequestList } =
+    api.contactRequest.getPendingSentList.useQuery();
 
   async function onSubmit() {
     setIsSearching(true);
@@ -87,6 +95,10 @@ export default function ContactDialog() {
                 const alreadyContact =
                   contactList?.some((contact) => contact.id === user.id) ??
                   false;
+                const isRequestPending =
+                  pendingRequestList?.some(
+                    (request) => request.to.id === user.id,
+                  ) ?? false;
                 return (
                   <div key={user.id} className="flex items-center gap-x-2 py-2">
                     {user.image ? (
@@ -108,12 +120,24 @@ export default function ContactDialog() {
                     )}
                     <div className="flex-1">{user.name}</div>
                     <Button
-                      disabled={alreadyContact}
-                      onClick={() => {
-                        addUser({ userId: user.id });
+                      disabled={
+                        alreadyContact ||
+                        isRequestPending ||
+                        addingUserId === user.id
+                      }
+                      onClick={async () => {
+                        setAddingUserId(user.id);
+                        await addUser({ userId: user.id });
+                        setAddingUserId(null);
                       }}
                     >
-                      Add
+                      {alreadyContact
+                        ? "Already Sent Request"
+                        : isRequestPending
+                          ? "Requested"
+                          : addingUserId === user.id
+                            ? "Sent Request"
+                            : "Add"}
                     </Button>
                   </div>
                 );

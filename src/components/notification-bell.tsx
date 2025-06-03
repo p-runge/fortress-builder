@@ -45,23 +45,17 @@ export default function NotificationBell() {
                 <div className="flex">
                   <div className="flex items-center gap-x-2">
                     <div className="flex w-xs items-center">
-                      {listItem.from.image ? (
-                        <Image
-                          alt="Discord User Profile Picture"
-                          src={listItem.from.image}
-                          width={60}
-                          height={60}
-                          className="shrink-0 rounded-full"
-                        ></Image>
-                      ) : (
-                        <Image
-                          alt="Default User Profile Picture"
-                          src="/default-profile-pic.png"
-                          width={60}
-                          height={60}
-                          className="shrink-0 rounded-full"
-                        ></Image>
-                      )}
+                      <Image
+                        alt="User Profile Picture"
+                        src={
+                          listItem.from.image
+                            ? listItem.from.image
+                            : "/default-profile-pic.png"
+                        }
+                        width={60}
+                        height={60}
+                        className="shrink-0 rounded-full"
+                      ></Image>
                       <div
                         title={listItem.from.name}
                         className="truncate text-xl"
